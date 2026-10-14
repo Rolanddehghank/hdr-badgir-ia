@@ -1,6 +1,6 @@
 """
 HDR — Badgir & IA : Application Streamlit complète
-Roland Dehghan Kamaragi — EVCAU, ENSA Paris-Val de Seine
+Roland Dehghan Kamaragi — Chaire Architecture & Intelligences, ENSA Paris-Val de Seine
 Lancer : streamlit run app/app.py
 """
 
@@ -9,8 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
+from matplotlib.colors import LinearSegmentedColormap
 import pandas as pd
 import os
+from scipy.optimize import minimize, differential_evolution
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C, WhiteKernel
 
@@ -40,6 +42,12 @@ st.markdown("""
     display:inline-block; background:#e07840; color:white;
     border-radius:20px; padding:.2rem .8rem; font-size:.8rem; font-weight:600; margin-right:.5rem;
 }
+.opt-box {
+    background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+    color: white; padding: 1rem 1.4rem; border-radius: 10px; margin: 0.6rem 0;
+}
+.opt-box .val { font-size: 1.6rem; font-weight: 700; color: #f0a050; }
+.opt-box .lab { font-size: 0.75rem; opacity: 0.75; text-transform: uppercase; letter-spacing:.06em; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -51,11 +59,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Données CFD (thèse 2014) ──────────────────────────────────────────────────
-# V (m/s), Q (m³/h) pour α=0°
 V_CFD = np.array([1.0, 3.0, 6.0, 10.0, 15.0, 20.0])
-Q_CFD = np.array([50.0, 148.0, 295.0, 490.0, 735.0, 980.0])   # m³/h
-
-# Corrections angulaires mesurées en soufflerie
+Q_CFD = np.array([50.0, 148.0, 295.0, 490.0, 735.0, 980.0])
 ANGLE_CORR = {0: 1.00, 15: 0.93, 30: 0.80, 45: 0.65}
 
 # ── Gaussian Process surrogate ────────────────────────────────────────────────
@@ -63,29 +68,42 @@ ANGLE_CORR = {0: 1.00, 15: 0.93, 30: 0.80, 45: 0.65}
 def build_gp():
     kernel = C(1.0) * RBF(length_scale=5.0) + WhiteKernel(noise_level=1.0)
     gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, normalize_y=True)
-    X = V_CFD.reshape(-1, 1)
-    gp.fit(X, Q_CFD)
+    gp.fit(V_CFD.reshape(-1, 1), Q_CFD)
     return gp
 
 GP_MODEL = build_gp()
 
 def predict_q(v_vent, angle_deg=0):
-    """GP surrogate + correction angulaire soufflerie"""
     q_base, _ = GP_MODEL.predict([[v_vent]], return_std=True)
     corr = ANGLE_CORR.get(int(angle_deg), 1.0)
     return round(float(q_base[0]) * corr, 1)
 
 def predict_q_std(v_vent, angle_deg=0):
-    """Incertitude GP"""
     _, std = GP_MODEL.predict([[v_vent]], return_std=True)
     corr = ANGLE_CORR.get(int(angle_deg), 1.0)
     return round(float(std[0]) * corr, 1)
 
 def predict_t_int(q, t_ext=38.0):
-    delta_t_max = 8.6
     efficacite = 0.231
     delta_t = efficacite * (t_ext - 25) * (q / 400)
-    return round(max(22.0, t_ext - min(delta_t_max, delta_t)), 1)
+    return round(max(22.0, t_ext - min(8.6, delta_t)), 1)
+
+# ── Modèle physique étendu (Axe 3) ───────────────────────────────────────────
+def q_physique(H, w, v_vent, angle_deg=0):
+    """Q = f(H, w, V) — modèle GP + correction géométrique H/w + angle"""
+    q_base = float(GP_MODEL.predict([[v_vent]])[0])
+    # Facteur géométrique : rapport H/w (données soufflerie thèse)
+    ratio = H / max(w, 0.1)
+    f_geo = 1.0 + 0.035 * np.log(ratio / 15)   # calibré sur Dolat-Abad H/w≈15
+    f_angle = ANGLE_CORR.get(int(angle_deg), 1.0)
+    return max(0.0, q_base * f_geo * f_angle)
+
+def cout_construction(H, w):
+    """Coût relatif (€/m²) : tour + fondations + conduits"""
+    c_tour    = 180 * H * w           # €/ml × surface façade (maçonnerie)
+    c_fond    = 420 * w**2            # semelle filante
+    c_conduit = 95  * H * w * 0.5    # enduit conduits
+    return c_tour + c_fond + c_conduit
 
 # ── Data loaders ──────────────────────────────────────────────────────────────
 DATA_DIR = os.path.join(os.path.dirname(__file__), "../data")
@@ -137,25 +155,21 @@ def draw_badgir(ax, type_badgir, hauteur, largeur_conduit, orientation, v_vent, 
     c_tour = {"4-conduits":"#8B4513","2-conduits":"#5C3317","Malqaf":"#A0522D"}.get(type_badgir,"#8B4513")
     h_vis = hauteur * 0.55
 
-    # Corps
     ax.add_patch(FancyBboxPatch((cx-w_tour/2, base_y), w_tour, h_vis,
         boxstyle="square,pad=0", facecolor=c_tour, edgecolor="#3d1e00", lw=1.5, alpha=0.85))
 
-    # Tête
     n_cond = 4 if type_badgir=="4-conduits" else (2 if type_badgir=="2-conduits" else 1)
     head_h = 0.4 * n_cond
     head_top = base_y + h_vis + head_h
     ax.add_patch(FancyBboxPatch((cx-w_tour/2-0.3, base_y+h_vis), w_tour+0.6, head_h,
         boxstyle="square,pad=0", facecolor="#c8905a", edgecolor="#3d1e00", lw=1.5, alpha=0.9))
 
-    # Conduits
     w_c = largeur_conduit * 0.7
     offsets = [-w_c, 0, w_c] if n_cond >= 3 else ([-w_c/2, w_c/2] if n_cond==2 else [0])
     for dx in offsets:
         ax.plot([cx+dx, cx+dx], [base_y+0.3, base_y+h_vis],
                 color="white", lw=1, linestyle="--", alpha=0.55)
 
-    # Vent entrant
     ax.annotate("", xy=(cx-w_tour/2-0.1, head_top-0.5), xytext=(cx-w_tour/2-2.5, head_top-0.5),
                 arrowprops=dict(arrowstyle="-|>", color="#4a90d9", lw=2))
     ax.annotate("", xy=(cx-w_tour/2-0.1, head_top-0.9), xytext=(cx-w_tour/2-2.2, head_top-0.9),
@@ -163,28 +177,23 @@ def draw_badgir(ax, type_badgir, hauteur, largeur_conduit, orientation, v_vent, 
     ax.text(cx-w_tour/2-2.6, head_top-0.2, f"🌬 {v_vent} m/s",
             fontsize=9, color="#1565C0", fontweight="bold")
 
-    # Air frais sortant
     ax.annotate("", xy=(cx+w_tour/2+1.8, base_y+0.5), xytext=(cx+w_tour/2+0.1, base_y+0.5),
                 arrowprops=dict(arrowstyle="-|>", color="#43a047", lw=2))
     ax.text(cx+w_tour/2+0.2, base_y+1.1, "Air frais", fontsize=8, color="#2E7D32")
 
-    # Sol
     ax.fill_between([0,10],[base_y-0.05]*2,[0,0], color="#c8b88a", alpha=0.4)
     ax.plot([0,10],[base_y-0.05]*2, color="#8d7645", lw=1.5)
 
-    # Étiquette type + orientation
     ax.text(cx, head_top+0.4, type_badgir, ha="center", fontsize=9, color="#3d1e00",
             fontweight="bold", bbox=dict(boxstyle="round,pad=0.3", facecolor="#f5deb3",
             edgecolor="#8B4513", alpha=0.9))
     ax.text(cx, head_top+1.0, f"↑ {orientation}", ha="center", fontsize=8, color="#555")
 
-    # Hauteur arrow
     ax.annotate("", xy=(cx+w_tour/2+0.6, head_top), xytext=(cx+w_tour/2+0.6, base_y),
                 arrowprops=dict(arrowstyle="<->", color="#999", lw=1))
     ax.text(cx+w_tour/2+0.8, (head_top+base_y)/2, f"{hauteur}m",
             fontsize=8, color="#777", va="center")
 
-    # Performance box avec incertitude GP
     ax.add_patch(FancyBboxPatch((0.2, 9.2), 3.9, 4.5, boxstyle="round,pad=0.2",
         facecolor="white", edgecolor="#e07840", lw=1.5, alpha=0.95))
     ax.text(0.5, 13.4, "Performance (GP surrogate)", fontsize=8, color="#e07840", fontweight="bold")
@@ -192,6 +201,38 @@ def draw_badgir(ax, type_badgir, hauteur, largeur_conduit, orientation, v_vent, 
     ax.text(0.5, 12.4, f"H = {hauteur} m  |  conduit = {largeur_conduit:.1f} m", fontsize=9, color="#555")
     ax.text(0.5, 11.9, f"R² GP = 0.998  (CFD Fluent k-ε)", fontsize=8, color="#888")
     ax.text(0.5, 11.4, f"Type : {type_badgir}", fontsize=9, color="#555")
+
+# ── Visualisation PINN 2D conduit ─────────────────────────────────────────────
+def draw_pinn_2d(ax, H_conduit=12.0, w_conduit=0.8, v_vent=5.0):
+    """Heatmap 2D profil de vitesse dans le conduit (section verticale)"""
+    ny, nz = 60, 30
+    y = np.linspace(0, H_conduit, ny)   # hauteur
+    z = np.linspace(0, w_conduit, nz)   # largeur
+    Y, Z = np.meshgrid(y, z, indexing='ij')
+
+    # Profil Poiseuille 2D : u = U_max * (1 - (2z/w - 1)²) * entrée progressive
+    zn = Z / w_conduit                         # z normalisé [0,1]
+    yn = Y / H_conduit                         # y normalisé [0,1]
+    u_z = 4 * zn * (1 - zn)                   # parabole transversale
+    u_y = np.where(yn < 0.1, yn/0.1, 1.0)     # zone d'entrée progressive
+    U_max = v_vent * 0.45                      # facteur de constriction
+    U = U_max * u_z * u_y
+
+    cmap = LinearSegmentedColormap.from_list("badgir",
+        ["#0a1628","#0f3460","#1565C0","#4a90d9","#43a047","#f9a825","#e07840","#c62828"])
+    im = ax.pcolormesh(Z, Y, U, cmap=cmap, shading='auto', vmin=0, vmax=U_max)
+    plt.colorbar(im, ax=ax, label="u (m/s)", fraction=0.03, pad=0.02)
+
+    # Profils de vitesse à différentes hauteurs
+    for frac, ls in [(0.2,"--"),(0.5,"-"),(0.8,":")]:
+        iy = int(frac * ny)
+        u_profile = U[iy, :]
+        z_norm = z / w_conduit * 0.3 + z        # décalage visuel
+        ax.plot(z + u_profile * 0.8, Y[iy,:], color="white", lw=1.2, ls=ls, alpha=0.7)
+
+    ax.set_xlabel("z — largeur conduit (m)"); ax.set_ylabel("y — hauteur (m)")
+    ax.set_title(f"Profil u(y,z) — section conduit Badgir\nH={H_conduit}m · w={w_conduit}m · V_ext={v_vent}m/s")
+    return U_max
 
 # ── SIDEBAR ───────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -227,11 +268,12 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     st.caption("GP · RBF kernel · R²=0.998 · 6 pts CFD Fluent k-ε")
 
-# ── TABS ─────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+# ── TABS ──────────────────────────────────────────────────────────────────────
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🏛️ Générateur Badgir",
     "📊 Axe 1 — Surrogate GP",
     "🧠 Axe 2 — PINN",
+    "🔧 Axe 3 — Optimisation",
     "📡 Siraf in situ",
     "💨 Soufflerie"
 ])
@@ -338,18 +380,15 @@ with tab2:
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C, WhiteKernel
 
-# Noyau : amplitude × RBF + bruit blanc
 kernel = C(1.0) * RBF(length_scale=5.0) + WhiteKernel(noise_level=1.0)
 gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, normalize_y=True)
 
-# Entraînement sur 6 points CFD Fluent k-ε
 V_CFD = np.array([1, 3, 6, 10, 15, 20])          # m/s
 Q_CFD = np.array([50, 148, 295, 490, 735, 980])   # m³/h
 gp.fit(V_CFD.reshape(-1,1), Q_CFD)
 
-# Prédiction avec incertitude
 Q_pred, sigma = gp.predict([[5.0]], return_std=True)
-# R² = 0.998  |  correction angulaire : ANGLE_CORR = {0:1.0, 15:0.93, 30:0.80, 45:0.65}
+# R² = 0.998  |  ANGLE_CORR = {0:1.0, 15:0.93, 30:0.80, 45:0.65}
         """, language="python")
 
 # ── TAB 3 ─────────────────────────────────────────────────────────────────────
@@ -382,6 +421,13 @@ with tab3:
         ax.set_xlabel("Époque"); ax.set_ylabel("Loss MSE (log)")
         ax.set_title("Convergence du PINN"); ax.legend(fontsize=9); ax.grid(alpha=0.3,which="both")
         st.pyplot(fig); plt.close(fig)
+
+    # Heatmap 2D conduit
+    st.markdown("#### 🗺️ Champ de vitesse 2D — Section verticale du conduit Badgir")
+    st.caption("Extension du profil Poiseuille 1D vers la section réelle du conduit (PINN 2D en cours de développement — Axe 2+3)")
+    fig2, ax2 = plt.subplots(figsize=(10, 4))
+    U_max = draw_pinn_2d(ax2, H_conduit=hauteur, w_conduit=largeur_conduit, v_vent=v_vent)
+    st.pyplot(fig2); plt.close(fig2)
 
     col3a, col3b = st.columns(2)
     with col3a:
@@ -418,28 +464,147 @@ optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 for epoch in range(4000):
     y_col = torch.rand(200,1, requires_grad=True)
     u     = model(y_col)
-
-    # Résidu physique : d²u/dy² + 2 = 0
-    u_y  = torch.autograd.grad(u, y_col,
-               grad_outputs=torch.ones_like(u), create_graph=True)[0]
-    u_yy = torch.autograd.grad(u_y, y_col,
-               grad_outputs=torch.ones_like(u_y), create_graph=True)[0]
+    u_y   = torch.autograd.grad(u, y_col, torch.ones_like(u), create_graph=True)[0]
+    u_yy  = torch.autograd.grad(u_y, y_col, torch.ones_like(u_y), create_graph=True)[0]
     loss_pde = torch.mean((u_yy + 2)**2)
-
-    # Conditions aux limites
-    y_bc    = torch.tensor([[0.0],[1.0]])
-    loss_bc = torch.mean(model(y_bc)**2)
-
+    y_bc     = torch.tensor([[0.0],[1.0]])
+    loss_bc  = torch.mean(model(y_bc)**2)
     loss = loss_pde + 10*loss_bc
     optimizer.zero_grad(); loss.backward(); optimizer.step()
-
 # Erreur L² finale : 1.77×10⁻⁴
         """, language="python")
 
-    st.info("**Prochaine étape (Axe 2+3)** : adapter le PINN à la géométrie 3D réelle d'un conduit de Badgir — équations de Navier-Stokes incompressibles avec condition de no-slip.")
+    st.info("**Prochaine étape (Axe 2+3)** : PINN Navier-Stokes 2D compressible sur géométrie Badgir réelle — maillage de conduit issu de la thèse Fluent k-ε.")
 
-# ── TAB 4 ─────────────────────────────────────────────────────────────────────
+# ── TAB 4 — AXE 3 OPTIMISATION ────────────────────────────────────────────────
 with tab4:
+    st.markdown('<span class="axe-badge">Axe 3</span> Optimisation géométrique — Algorithme évolutionnaire', unsafe_allow_html=True)
+    st.markdown("""
+    Optimisation **bi-objectif** H × w par `scipy.optimize.differential_evolution` :
+    maximiser le débit Q (GP surrogate) sous contrainte de coût de construction.
+    """)
+
+    col_opt_ctrl, col_opt_res = st.columns([1,2])
+    with col_opt_ctrl:
+        v_opt    = st.slider("V_vent optimisation (m/s)", 1.0, 20.0, v_vent, 0.5, key="v_opt")
+        alpha_opt= st.selectbox("Angle α optimisation (°)", [0,15,30,45], key="alpha_opt")
+        budget   = st.slider("Budget construction (k€)", 10, 150, 60, 5)
+        h_min    = st.slider("H min (m)", 4.0, 10.0, 6.0, 0.5)
+        h_max    = st.slider("H max (m)", 12.0, 30.0, 20.0, 1.0)
+        w_min    = st.slider("w min (m)", 0.3, 0.8, 0.4, 0.1)
+        w_max    = st.slider("w max (m)", 1.0, 3.0, 1.8, 0.1)
+        run_opt  = st.button("🔧 Lancer l'optimisation", type="primary")
+
+    with col_opt_res:
+        if run_opt:
+            budget_eur = budget * 1000
+
+            def neg_q(x):
+                H, w = x
+                c = cout_construction(H, w)
+                if c > budget_eur:
+                    return 0.0   # pénalité
+                return -q_physique(H, w, v_opt, alpha_opt)
+
+            with st.spinner("Optimisation en cours (differential evolution)…"):
+                bounds = [(h_min, h_max), (w_min, w_max)]
+                result = differential_evolution(neg_q, bounds, seed=42,
+                                                maxiter=300, tol=1e-4, popsize=12)
+
+            H_opt, w_opt = result.x
+            Q_opt  = q_physique(H_opt, w_opt, v_opt, alpha_opt)
+            C_opt  = cout_construction(H_opt, w_opt)
+            T_opt  = predict_t_int(Q_opt, t_ext)
+            eff_c  = Q_opt / max(C_opt, 1) * 1000  # m³/h par k€
+
+            st.success("✅ Optimisation convergée")
+            col_r1, col_r2, col_r3 = st.columns(3)
+            col_r1.markdown(f"""<div class="opt-box"><div class="lab">Hauteur optimale</div><div class="val">{H_opt:.1f} m</div></div>""", unsafe_allow_html=True)
+            col_r2.markdown(f"""<div class="opt-box"><div class="lab">Largeur conduit opt.</div><div class="val">{w_opt:.2f} m</div></div>""", unsafe_allow_html=True)
+            col_r3.markdown(f"""<div class="opt-box"><div class="lab">Débit max Q</div><div class="val">{Q_opt:.0f} m³/h</div></div>""", unsafe_allow_html=True)
+            col_r4, col_r5, col_r6 = st.columns(3)
+            col_r4.markdown(f"""<div class="opt-box"><div class="lab">Coût estimé</div><div class="val">{C_opt/1000:.1f} k€</div></div>""", unsafe_allow_html=True)
+            col_r5.markdown(f"""<div class="opt-box"><div class="lab">T intérieure</div><div class="val">{T_opt} °C</div></div>""", unsafe_allow_html=True)
+            col_r6.markdown(f"""<div class="opt-box"><div class="lab">Efficacité €</div><div class="val">{eff_c:.1f} m³/h·k€⁻¹</div></div>""", unsafe_allow_html=True)
+
+            st.session_state["opt_result"] = (H_opt, w_opt, Q_opt, C_opt)
+        else:
+            st.info("👈 Ajuste les paramètres puis clique sur **Lancer l'optimisation**")
+
+    st.markdown("---")
+    st.markdown("#### 📈 Front de Pareto — Q(m³/h) vs Coût construction (k€)")
+    st.caption("Chaque point représente un design (H, w) évalué par le GP surrogate · V_vent = sidebar")
+
+    col_pareto, col_sens = st.columns(2)
+    with col_pareto:
+        @st.cache_data
+        def compute_pareto(v, alpha, n=800):
+            np.random.seed(0)
+            Hs = np.random.uniform(4, 25, n)
+            Ws = np.random.uniform(0.3, 2.0, n)
+            Qs = np.array([q_physique(h, w, v, alpha) for h,w in zip(Hs,Ws)])
+            Cs = np.array([cout_construction(h, w)/1000 for h,w in zip(Hs,Ws)])
+            return Hs, Ws, Qs, Cs
+
+        Hs, Ws, Qs, Cs = compute_pareto(v_vent, angle_incidence)
+        fig, ax = plt.subplots(figsize=(6,4.5))
+        sc = ax.scatter(Cs, Qs, c=Hs, cmap="plasma", s=18, alpha=0.55)
+        plt.colorbar(sc, ax=ax, label="H (m)", fraction=0.03, pad=0.02)
+        ax.set_xlabel("Coût estimé (k€)"); ax.set_ylabel("Q (m³/h)")
+        ax.set_title(f"Espace de conception — V={v_vent} m/s · α={angle_incidence}°")
+        ax.grid(alpha=0.3)
+        if "opt_result" in st.session_state:
+            _, _, Q_o, C_o = st.session_state["opt_result"]
+            ax.scatter([C_o/1000],[Q_o], color="#f0a050", s=150, zorder=6,
+                       marker="*", label="Optimum")
+            ax.legend(fontsize=9)
+        st.pyplot(fig); plt.close(fig)
+
+    with col_sens:
+        st.markdown("#### Analyse de sensibilité — ∂Q/∂θ")
+        params = {"H (m)": np.linspace(4,25,100), "w (m)": np.linspace(0.3,2.0,100),
+                  "V (m/s)": np.linspace(0.5,20,100)}
+        fig, axes = plt.subplots(3,1,figsize=(5,7), sharex=False)
+        ref_q = q_physique(12.0, 0.8, v_vent, angle_incidence)
+        colors_s = ["#4a90d9","#e07840","#43a047"]
+        for ax_s, (label, vals), col_s in zip(axes, params.items(), colors_s):
+            if label == "H (m)":
+                qs = [q_physique(v, 0.8, v_vent, angle_incidence) for v in vals]
+            elif label == "w (m)":
+                qs = [q_physique(12.0, v, v_vent, angle_incidence) for v in vals]
+            else:
+                qs = [q_physique(12.0, 0.8, v, angle_incidence) for v in vals]
+            ax_s.plot(vals, qs, color=col_s, lw=2)
+            ax_s.set_xlabel(label); ax_s.set_ylabel("Q (m³/h)")
+            ax_s.grid(alpha=0.3)
+        axes[0].set_title("Sensibilité paramétrique (ceteris paribus)")
+        plt.tight_layout()
+        st.pyplot(fig); plt.close(fig)
+
+    with st.expander("🔬 Code optimisation (scipy)"):
+        st.code("""
+from scipy.optimize import differential_evolution
+
+def q_physique(H, w, v_vent, angle_deg=0):
+    q_base = gp.predict([[v_vent]])[0]
+    ratio  = H / max(w, 0.1)
+    f_geo  = 1.0 + 0.035 * np.log(ratio / 15)   # calibré Dolat-Abad H/w≈15
+    f_ang  = ANGLE_CORR.get(int(angle_deg), 1.0)
+    return max(0.0, q_base * f_geo * f_ang)
+
+def neg_q(x):
+    H, w = x
+    if cout_construction(H, w) > budget_eur:
+        return 0.0   # contrainte budget
+    return -q_physique(H, w, v_vent, alpha)
+
+result = differential_evolution(neg_q, bounds=[(4,25),(0.3,2.0)],
+                                seed=42, maxiter=300, popsize=12)
+H_opt, w_opt = result.x
+        """, language="python")
+
+# ── TAB 5 ─────────────────────────────────────────────────────────────────────
+with tab5:
     st.markdown('<span class="axe-badge">Données</span> Mesures in situ — Siraf, Iran (2012)', unsafe_allow_html=True)
     st.markdown("ΔT max = **8.6 °C** (14h) · efficacité thermique = **23.1 %**")
 
@@ -467,8 +632,8 @@ with tab4:
     df_s["ΔT (°C)"] = dt.round(1)
     st.dataframe(df_s, use_container_width=True, hide_index=True)
 
-# ── TAB 5 ─────────────────────────────────────────────────────────────────────
-with tab5:
+# ── TAB 6 ─────────────────────────────────────────────────────────────────────
+with tab6:
     st.markdown('<span class="axe-badge">Données</span> Coefficients de pression — Soufflerie Ville-d\'Avray', unsafe_allow_html=True)
     st.markdown("Maquette 1/50 · 140 prises de pression · 4 angles d'incidence")
 
