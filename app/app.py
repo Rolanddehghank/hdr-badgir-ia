@@ -110,9 +110,7 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "../data")
 
 @st.cache_data
 def load_siraf():
-    p = os.path.join(DATA_DIR, "siraf_mesures.csv")
-    if os.path.exists(p):
-        return pd.read_csv(p)
+    # Données in situ Siraf 2012 (thèse Roland Dehghan Kamaragi)
     return pd.DataFrame({
         "heure":  list(range(8, 18)),
         "V_ext":  [2.1,2.8,3.5,4.2,5.0,5.3,4.8,4.0,3.2,2.5],
