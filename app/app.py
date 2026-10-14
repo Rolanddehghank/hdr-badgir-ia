@@ -18,7 +18,7 @@ from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C, WhiteKern
 
 st.set_page_config(
     page_title="HDR Badgir × IA",
-    page_icon="🌬️",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -53,7 +53,7 @@ st.markdown("""
 
 st.markdown("""
 <div class="main-header">
-  <h1>🌬️ HDR Badgir × Intelligence Artificielle</h1>
+  <h1>HDR Badgir × Intelligence Artificielle</h1>
   <p>Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine</p>
 </div>
 """, unsafe_allow_html=True)
@@ -185,7 +185,7 @@ def draw_badgir(ax, type_badgir, hauteur, largeur_conduit, orientation, v_vent, 
                 arrowprops=dict(arrowstyle="-|>", color="#4a90d9", lw=2))
     ax.annotate("", xy=(cx-w_tour/2-0.1, head_top-0.9), xytext=(cx-w_tour/2-2.2, head_top-0.9),
                 arrowprops=dict(arrowstyle="-|>", color="#4a90d9", lw=1.4, alpha=0.7))
-    ax.text(cx-w_tour/2-2.6, head_top-0.2, f"🌬 {v_vent} m/s",
+    ax.text(cx-w_tour/2-2.6, head_top-0.2, f"V = {v_vent} m/s",
             fontsize=9, color="#1565C0", fontweight="bold")
 
     ax.annotate("", xy=(cx+w_tour/2+1.8, base_y+0.5), xytext=(cx+w_tour/2+0.1, base_y+0.5),
@@ -247,14 +247,14 @@ def draw_pinn_2d(ax, H_conduit=12.0, w_conduit=0.8, v_vent=5.0):
 
 # ── SIDEBAR ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### ⚙️ Paramètres Badgir")
+    st.markdown("### Paramètres Badgir")
     type_badgir     = st.selectbox("Type", ["4-conduits","2-conduits","Malqaf"])
     hauteur         = st.slider("Hauteur (m)", 4.0, 25.0, 12.0, 0.5)
     largeur_conduit = st.slider("Largeur conduit (m)", 0.3, 2.0, 0.8, 0.1)
     orientation     = st.selectbox("Orientation", ["Nord","Nord-Est","Est","Sud-Est","Sud"])
 
     st.markdown("---")
-    st.markdown("### 🌡️ Conditions climatiques")
+    st.markdown("### Conditions climatiques")
     angle_incidence = st.selectbox("Angle incidence α (°)", [0,15,30,45])
     v_vent          = st.slider("Vitesse vent (m/s)", 0.5, 20.0, 5.0, 0.5)
     t_ext           = st.slider("T extérieure (°C)", 25, 50, 38)
@@ -280,14 +280,13 @@ with st.sidebar:
     st.caption("GP · RBF kernel · R²=0.998 · 6 pts CFD Fluent k-ε")
 
 # ── TABS ──────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🏛️ Générateur Badgir",
-    "📊 Axe 1 GP",
-    "🧠 Axe 2 PINN",
-    "🔧 Axe 3 Optimisation",
+    "📊 Axe 1 — Surrogate GP",
+    "🧠 Axe 2 — PINN",
+    "🔧 Axe 3 — Optimisation",
     "📡 Siraf in situ",
-    "💨 Soufflerie",
-    "❓ Aide"
+    "💨 Soufflerie"
 ])
 
 # ── TAB 1 ─────────────────────────────────────────────────────────────────────
@@ -678,10 +677,3 @@ with tab6:
 
 st.divider()
 st.caption("HDR Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine · Données : thèse 2014, soufflerie Ville-d'Avray, CFD Fluent k-ε, mesures in situ Siraf 2012")
-with tab7:
-    st.subheader("Guide d'utilisation")
-    try:
-        with open("app/aide_app.html", "r", encoding="utf-8") as f:
-            st.components.v1.html(f.read(), height=800, scrolling=True)
-    except FileNotFoundError:
-        st.warning("Fichier aide_app.html introuvable dans app/")
