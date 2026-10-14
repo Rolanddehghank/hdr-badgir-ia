@@ -1,0 +1,19 @@
+{
+  "site": "Yazd - Dolat Abad",
+  "tour": {
+    "hauteur_m": 33.8,
+    "nb_conduits": 4,
+    "orientation": "croix_X"
+  },
+  "canal": {
+    "largeur_m": 2.4,
+    "hauteur_m": 1.5
+  },
+  "piece": {
+    "longueur_m": 6.0,
+    "largeur_m": 4.0,
+    "hauteur_m": 2.5
+  },
+  "bassin_profondeur_m": 1.75,
+  "maquette_echelle": "1/50"
+}
