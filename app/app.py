@@ -51,10 +51,29 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="main-header">
-  <h1>HDR Badgir × Intelligence Artificielle</h1>
-  <p>Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine</p>
+SVG_TOWER = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 38" fill="none">
+  <rect x="9" y="15" width="10" height="19" rx="1" fill="currentColor"/>
+  <rect x="7" y="10" width="14" height="6" rx="1" fill="currentColor" opacity=".85"/>
+  <rect x="7"  y="7" width="3" height="4" rx=".5" fill="currentColor"/>
+  <rect x="12.5" y="7" width="3" height="4" rx=".5" fill="currentColor"/>
+  <rect x="18" y="7" width="3" height="4" rx=".5" fill="currentColor"/>
+  <line x1="12.5" y1="15" x2="12.5" y2="32" stroke="white" stroke-width=".8" stroke-dasharray="2,2" opacity=".45"/>
+  <line x1="15.5" y1="15" x2="15.5" y2="32" stroke="white" stroke-width=".8" stroke-dasharray="2,2" opacity=".45"/>
+  <rect x="5" y="33" width="18" height="2.5" rx="1" fill="currentColor" opacity=".6"/>
+  <path d="M1 12 L6.5 12" stroke="#7ec8f4" stroke-width="1.6" stroke-linecap="round" marker-end="none"/>
+  <path d="M1 12 L5.5 12" stroke="#7ec8f4" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M5 10.5 L7 12 L5 13.5" stroke="#7ec8f4" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>"""
+
+st.markdown(f"""
+<div class="main-header" style="position:relative;overflow:hidden">
+  <div style="position:relative;z-index:1">
+    <h1>HDR Badgir × Intelligence Artificielle</h1>
+    <p>Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine</p>
+  </div>
+  <div style="position:absolute;right:1.5rem;bottom:0;opacity:.15;color:white;width:90px;height:110px">
+    {SVG_TOWER}
+  </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -247,14 +266,25 @@ def draw_pinn_2d(ax, H_conduit=12.0, w_conduit=0.8, v_vent=5.0):
 
 # ── SIDEBAR ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### Paramètres Badgir")
+    st.markdown(f"""
+<div style="display:flex;align-items:center;gap:.55rem;margin-bottom:.3rem">
+  <div style="color:#e07840;width:22px;height:28px;flex-shrink:0">{SVG_TOWER}</div>
+  <span style="font-size:.95rem;font-weight:700;color:#1a1a2e;letter-spacing:.01em">Paramètres Badgir</span>
+</div>""", unsafe_allow_html=True)
     type_badgir     = st.selectbox("Type", ["4-conduits","2-conduits","Malqaf"])
     hauteur         = st.slider("Hauteur (m)", 4.0, 25.0, 12.0, 0.5)
     largeur_conduit = st.slider("Largeur conduit (m)", 0.3, 2.0, 0.8, 0.1)
     orientation     = st.selectbox("Orientation", ["Nord","Nord-Est","Est","Sud-Est","Sud"])
 
     st.markdown("---")
-    st.markdown("### Conditions climatiques")
+    st.markdown("""
+<div style="display:flex;align-items:center;gap:.5rem;margin:.2rem 0 .1rem">
+  <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 8 Q4.5 4 8 8 Q11.5 12 15 8 Q17 6 19 8" stroke="#4a90d9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M1 12.5 Q4.5 8.5 8 12.5 Q11.5 16.5 15 12.5 Q17 10.5 19 12.5" stroke="#4a90d9" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/>
+  </svg>
+  <span style="font-size:.95rem;font-weight:700;color:#1a1a2e;letter-spacing:.01em">Conditions climatiques</span>
+</div>""", unsafe_allow_html=True)
     angle_incidence = st.selectbox("Angle incidence α (°)", [0,15,30,45])
     v_vent          = st.slider("Vitesse vent (m/s)", 0.5, 20.0, 5.0, 0.5)
     t_ext           = st.slider("T extérieure (°C)", 25, 50, 38)
@@ -267,12 +297,23 @@ with st.sidebar:
 
     st.markdown(f"""
     <div class="metric-card">
-      <div class="label">Débit prédit Q (GP)</div>
+      <div class="label">
+        <svg width="12" height="12" viewBox="0 0 12 12" style="vertical-align:middle;margin-right:3px">
+          <path d="M1 6 Q3 3 5 6 Q7 9 9 6 Q10 5 11 6" stroke="#e07840" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>Débit prédit Q (GP)
+      </div>
       <div class="value">{q_pred} m³/h</div>
       <div class="delta">± {sigma_q} m³/h · α={angle_incidence}°</div>
     </div>
     <div class="metric-card">
-      <div class="label">T intérieure estimée</div>
+      <div class="label">
+        <svg width="12" height="12" viewBox="0 0 12 12" style="vertical-align:middle;margin-right:3px">
+          <rect x="5" y="1" width="2" height="7" rx="1" fill="#e07840"/>
+          <circle cx="6" cy="10" r="2" fill="#e07840"/>
+          <line x1="7.5" y1="4" x2="10" y2="4" stroke="#e07840" stroke-width="1"/>
+          <line x1="7.5" y1="6" x2="9" y2="6" stroke="#e07840" stroke-width="1"/>
+        </svg>T intérieure estimée
+      </div>
       <div class="value">{t_int} °C</div>
       <div class="delta">ΔT = {delta_t} °C</div>
     </div>
@@ -676,14 +717,15 @@ with tab6:
         pivot = df_sf.pivot_table(values="Cp",index="face",columns="angle").round(3)
         st.dataframe(pivot, use_container_width=True)
 
-st.divider()
-st.caption("HDR Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine · Données : thèse 2014, soufflerie Ville-d'Avray, CFD Fluent k-ε, mesures in situ Siraf 2012")
-# -- TAB 7 � AIDE -------------------------------------------------------------
+# ── TAB 7 — AIDE ─────────────────────────────────────────────────────────────
 with tab7:
     st.markdown("### Guide d'utilisation")
     aide_path = os.path.join(os.path.dirname(__file__), "aide_app.html")
     try:
-       with open(aide_path, "r", encoding="latin-1") as f:
+        with open(aide_path, "r", encoding="utf-8") as f:
             st.components.v1.html(f.read(), height=820, scrolling=True)
     except FileNotFoundError:
         st.warning(f"Fichier aide_app.html introuvable dans {os.path.dirname(__file__)}")
+
+st.divider()
+st.caption("HDR Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine · Données : thèse 2014, soufflerie Ville-d'Avray, CFD Fluent k-ε, mesures in situ Siraf 2012")
