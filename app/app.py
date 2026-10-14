@@ -269,7 +269,7 @@ with st.sidebar:
     st.markdown(f"""
 <div style="display:flex;align-items:center;gap:.55rem;margin-bottom:.3rem">
   <div style="color:#e07840;width:22px;height:28px;flex-shrink:0">{SVG_TOWER}</div>
-  <span style="font-size:.95rem;font-weight:700;color:#1a1a2e;letter-spacing:.01em">Paramètres Badgir</span>
+  <span style="font-size:.95rem;font-weight:700;letter-spacing:.01em">Paramètres Badgir</span>
 </div>""", unsafe_allow_html=True)
     type_badgir     = st.selectbox("Type", ["4-conduits","2-conduits","Malqaf"])
     hauteur         = st.slider("Hauteur (m)", 4.0, 25.0, 12.0, 0.5)
@@ -283,7 +283,7 @@ with st.sidebar:
     <path d="M1 8 Q4.5 4 8 8 Q11.5 12 15 8 Q17 6 19 8" stroke="#4a90d9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M1 12.5 Q4.5 8.5 8 12.5 Q11.5 16.5 15 12.5 Q17 10.5 19 12.5" stroke="#4a90d9" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/>
   </svg>
-  <span style="font-size:.95rem;font-weight:700;color:#1a1a2e;letter-spacing:.01em">Conditions climatiques</span>
+  <span style="font-size:.95rem;font-weight:700;letter-spacing:.01em">Conditions climatiques</span>
 </div>""", unsafe_allow_html=True)
     angle_incidence = st.selectbox("Angle incidence α (°)", [0,15,30,45])
     v_vent          = st.slider("Vitesse vent (m/s)", 0.5, 20.0, 5.0, 0.5)
