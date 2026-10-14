@@ -280,13 +280,14 @@ with st.sidebar:
     st.caption("GP · RBF kernel · R²=0.998 · 6 pts CFD Fluent k-ε")
 
 # ── TABS ──────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "🏛️ Générateur Badgir",
-    "📊 Axe 1 — Surrogate GP",
-    "🧠 Axe 2 — PINN",
-    "🔧 Axe 3 — Optimisation",
+    "📊 Axe 1 GP",
+    "🧠 Axe 2 PINN",
+    "🔧 Axe 3 Optimisation",
     "📡 Siraf in situ",
-    "💨 Soufflerie"
+    "💨 Soufflerie",
+    "❓ Aide"
 ])
 
 # ── TAB 1 ─────────────────────────────────────────────────────────────────────
@@ -677,3 +678,10 @@ with tab6:
 
 st.divider()
 st.caption("HDR Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine · Données : thèse 2014, soufflerie Ville-d'Avray, CFD Fluent k-ε, mesures in situ Siraf 2012")
+with tab7:
+    st.subheader("Guide d'utilisation")
+    try:
+        with open("app/aide_app.html", "r", encoding="utf-8") as f:
+            st.components.v1.html(f.read(), height=800, scrolling=True)
+    except FileNotFoundError:
+        st.warning("Fichier aide_app.html introuvable dans app/")

@@ -1,0 +1,1070 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Aide — HDR Badgir × IA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f7f6f3;
+  --surface: #ffffff;
+  --surface2: #f0ede8;
+  --border: #e2ddd6;
+  --fg: #1c1a17;
+  --fg2: #4a4540;
+  --fg3: #7a746e;
+  --accent: #c85e1f;
+  --accent2: #0f5c8f;
+  --accent-bg: #fdf1ea;
+  --accent2-bg: #e8f2f9;
+  --green: #1a7a4a;
+  --green-bg: #e8f5ee;
+  --purple: #5c3a8f;
+  --purple-bg: #f0ebf8;
+  --code-bg: #f3f0eb;
+  --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a1815;
+    --surface: #232018;
+    --surface2: #2c2924;
+    --border: #3a3630;
+    --fg: #f0ece4;
+    --fg2: #c8c0b0;
+    --fg3: #8a826e;
+    --accent: #e07840;
+    --accent2: #4a9fd4;
+    --accent-bg: #2c1e12;
+    --accent2-bg: #0e2235;
+    --green: #3acf7e;
+    --green-bg: #0d2e1e;
+    --purple: #a07ee0;
+    --purple-bg: #1e1030;
+    --code-bg: #2a2720;
+    --shadow: 0 1px 4px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a1815;
+  --surface: #232018;
+  --surface2: #2c2924;
+  --border: #3a3630;
+  --fg: #f0ece4;
+  --fg2: #c8c0b0;
+  --fg3: #8a826e;
+  --accent: #e07840;
+  --accent2: #4a9fd4;
+  --accent-bg: #2c1e12;
+  --accent2-bg: #0e2235;
+  --green: #3acf7e;
+  --green-bg: #0d2e1e;
+  --purple: #a07ee0;
+  --purple-bg: #1e1030;
+  --code-bg: #2a2720;
+  --shadow: 0 1px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  padding-inline: 16px;
+  padding-block: 0;
+}
+/* Layout */
+.layout { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 260px 1fr; gap: 0; min-height: 100vh; }
+@media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
+/* Sidebar */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+@media (max-width: 720px) {
+  .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+}
+.sidebar h2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg3); margin: 0 0 8px 4px; }
+.sidebar nav { display: flex; flex-direction: column; gap: 2px; margin-bottom: 20px; }
+.sidebar a {
+  display: block; padding: 7px 10px; border-radius: 6px;
+  color: var(--fg2); text-decoration: none; font-size: 13.5px;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar a:hover, .sidebar a.active { background: var(--accent-bg); color: var(--accent); }
+.sidebar a .icon { margin-right: 6px; }
+/* Main */
+.main { padding: 40px 32px; }
+@media (max-width: 720px) { .main { padding: 24px 0; } }
+/* Header */
+.site-header {
+  text-align: center; margin-bottom: 40px;
+  padding: 32px 24px; background: var(--surface); border-radius: 12px;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.site-header .badge {
+  display: inline-block; background: var(--accent-bg); color: var(--accent);
+  font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+  margin-bottom: 12px; letter-spacing: 0.04em;
+}
+.site-header h1 { margin: 0 0 8px; font-size: 26px; font-weight: 700; color: var(--fg); text-wrap: balance; }
+.site-header p { margin: 0; color: var(--fg3); font-size: 14px; }
+/* Search */
+.search-wrap { margin-bottom: 32px; position: relative; }
+.search-wrap input {
+  width: 100%; padding: 12px 16px 12px 40px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--fg); font-size: 14px;
+  font-family: inherit; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--fg3); pointer-events: none; }
+/* Section */
+.section { margin-bottom: 48px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px 10px 0 0;
+  border-bottom: 2px solid var(--accent); margin-bottom: 0;
+}
+.section-header .tab-icon { font-size: 22px; }
+.section-header h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--fg); }
+.section-header .tab-label { font-size: 12px; color: var(--fg3); font-family: 'Fira Code', monospace; margin-left: auto; }
+/* Cards */
+.cards { display: flex; flex-direction: column; gap: 0; }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-top: none; padding: 20px 24px;
+}
+.card:last-child { border-radius: 0 0 10px 10px; }
+.card-head {
+  display: flex; align-items: flex-start; gap: 12px;
+  cursor: pointer; user-select: none;
+}
+.card-head:hover .card-title { color: var(--accent); }
+.card-tag {
+  flex-shrink: 0; margin-top: 2px;
+  background: var(--accent-bg); color: var(--accent);
+  font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.card-tag.btn { background: var(--green-bg); color: var(--green); }
+.card-tag.formula { background: var(--purple-bg); color: var(--purple); }
+.card-tag.result { background: var(--accent2-bg); color: var(--accent2); }
+.card-tag.param { background: var(--surface2); color: var(--fg2); }
+.card-title { font-size: 15px; font-weight: 600; color: var(--fg); flex: 1; }
+.card-caret { color: var(--fg3); font-size: 12px; flex-shrink: 0; margin-top: 4px; transition: transform 0.2s; }
+.card[open] .card-caret { transform: rotate(90deg); }
+.card-body { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); color: var(--fg2); font-size: 14px; }
+.card-body p { margin: 0 0 10px; }
+.card-body p:last-child { margin: 0; }
+.card-body ul { margin: 8px 0 10px 18px; padding: 0; }
+.card-body li { margin-bottom: 5px; }
+/* Formula box */
+.formula-box {
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-left: 3px solid var(--purple); border-radius: 6px;
+  padding: 12px 16px; margin: 12px 0; font-family: 'Fira Code', monospace;
+  font-size: 13px; color: var(--fg); overflow-x: auto;
+}
+/* Info box */
+.info-box {
+  background: var(--accent2-bg); border-left: 3px solid var(--accent2);
+  border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 12px 0;
+  font-size: 13px; color: var(--fg2);
+}
+.info-box strong { color: var(--accent2); }
+/* Tip box */
+.tip-box {
+  background: var(--green-bg); border-left: 3px solid var(--green);
+  border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 12px 0;
+  font-size: 13px; color: var(--fg2);
+}
+.tip-box strong { color: var(--green); }
+/* Inline code */
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-family: 'Fira Code', monospace; font-size: 12.5px; }
+/* Divider */
+hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+/* No results */
+.no-results { text-align: center; padding: 40px; color: var(--fg3); font-size: 14px; }
+/* Toggle dark */
+.theme-btn {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 50%; width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 18px; box-shadow: var(--shadow-md);
+  color: var(--fg); transition: background 0.15s;
+}
+.theme-btn:hover { background: var(--surface2); }
+/* highlight */
+mark { background: color-mix(in srgb, var(--accent) 20%, transparent); color: inherit; border-radius: 2px; padding: 0 1px; }
+</style>
+</head>
+<body>
+<button class="theme-btn" id="themeBtn" title="Changer le thème">🌙</button>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <h2>Navigation</h2>
+  <nav id="sideNav">
+    <a href="#intro" class="active"><span class="icon">📖</span>Introduction</a>
+    <a href="#generateur"><span class="icon">🏛️</span>Générateur Badgir</a>
+    <a href="#axe1"><span class="icon">📊</span>Axe 1 — Modèle GP</a>
+    <a href="#axe2"><span class="icon">🧠</span>Axe 2 — PINN</a>
+    <a href="#axe3"><span class="icon">🔧</span>Axe 3 — Optimisation</a>
+    <a href="#siraf"><span class="icon">📡</span>Siraf in situ</a>
+    <a href="#soufflerie"><span class="icon">💨</span>Soufflerie</a>
+    <a href="#glossaire"><span class="icon">📚</span>Glossaire</a>
+  </nav>
+  <h2>Types d'éléments</h2>
+  <nav>
+    <a href="#" onclick="filterTag('slider'); return false;"><span class="card-tag param" style="font-size:11px;">param</span> Curseurs / Paramètres</a>
+    <a href="#" onclick="filterTag('btn'); return false;"><span class="card-tag btn" style="font-size:11px;">bouton</span> Boutons</a>
+    <a href="#" onclick="filterTag('formula'); return false;"><span class="card-tag formula" style="font-size:11px;">formule</span> Formules</a>
+    <a href="#" onclick="filterTag('result'); return false;"><span class="card-tag result" style="font-size:11px;">résultat</span> Graphiques / Résultats</a>
+    <a href="#" onclick="filterTag('all'); return false;">↺ Tout afficher</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<div class="site-header">
+  <div class="badge">Guide interactif</div>
+  <h1>Comment fonctionne l'application HDR Badgir × IA ?</h1>
+  <p>Explication complète de chaque onglet, chaque curseur, chaque bouton et chaque formule — sans jargon inutile.</p>
+</div>
+
+<div class="search-wrap">
+  <span class="search-icon">🔍</span>
+  <input type="text" id="searchInput" placeholder="Chercher : débit, Pareto, PINN, Siraf, slider…">
+</div>
+
+<div id="content">
+
+<!-- ======================== INTRO ======================== -->
+<div class="section" id="intro">
+  <div class="section-header">
+    <span class="tab-icon">📖</span>
+    <h2>Introduction générale</h2>
+    <span class="tab-label">Avant de commencer</span>
+  </div>
+  <div class="cards">
+    <div class="card" data-tags="intro">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag">intro</span>
+        <span class="card-title">À quoi sert cette application ?</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Cette application illustre les <strong>trois axes de recherche de l'HDR</strong> (Habilitation à Diriger des Recherches) de Roland Dehghan Kamaragi, qui porte sur l'intégration de l'Intelligence Artificielle dans l'étude des <strong>tours à vent (Badgirs)</strong> — des dispositifs architecturaux anciens qui refroidissent naturellement les bâtiments en captant le vent.</p>
+        <p>En résumé : sans air conditionné, sans électricité, un Badgir peut abaisser la température intérieure de <strong>8 à 9°C</strong>. L'application permet d'explorer comment l'IA peut prédire et optimiser cette performance.</p>
+        <div class="tip-box"><strong>Pour l'utiliser :</strong> chaque onglet en haut de l'écran correspond à un outil différent. Cliquez sur un onglet, ajustez les curseurs, observez les résultats. Pas besoin de connaître les formules pour commencer.</div>
+      </div>
+    </div>
+    <div class="card" data-tags="intro">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag">intro</span>
+        <span class="card-title">Les 6 onglets en un coup d'œil</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <ul>
+          <li><strong>🏛️ Générateur Badgir</strong> — dessiner un Badgir et calculer son débit en direct</li>
+          <li><strong>📊 Axe 1 — Modèle GP</strong> — voir comment l'IA prédit le débit d'air à partir de 6 simulations</li>
+          <li><strong>🧠 Axe 2 — PINN</strong> — simuler l'écoulement d'air dans un conduit avec un réseau de neurones entraîné par les lois de la physique</li>
+          <li><strong>🔧 Axe 3 — Optimisation</strong> — trouver le meilleur Badgir possible pour un budget donné</li>
+          <li><strong>📡 Siraf in situ</strong> — données réelles mesurées en Iran en 2012</li>
+          <li><strong>💨 Soufflerie</strong> — données de la maquette testée en soufflerie (Ville-d'Avray)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" data-tags="intro">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag">intro</span>
+        <span class="card-title">Qu'est-ce qu'un Badgir exactement ?</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Un <strong>Badgir</strong> (en persan : « capteur de vent ») est une tour construite en terre crue ou en brique, percée de conduits verticaux. Le vent entre par l'ouverture exposée en hauteur, descend dans le conduit, et ressort dans la pièce en dessous — plus frais, car il a été ralenti et en contact avec les parois de la tour.</p>
+        <p>Les plus célèbres se trouvent à <strong>Yazd</strong> (Iran), dont le Dolat-Abad, haut de 33,8 m. La thèse de 2014 a mesuré leur efficacité sur 4 sites : Siraf, Yazd, Bushehr, Abyaneh.</p>
+        <p>Dans l'application, deux paramètres définissent la géométrie du Badgir :</p>
+        <ul>
+          <li><strong>H</strong> — hauteur de la tour (en mètres)</li>
+          <li><strong>w</strong> — largeur du conduit (en mètres)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== GÉNÉRATEUR ======================== -->
+<div class="section" id="generateur">
+  <div class="section-header">
+    <span class="tab-icon">🏛️</span>
+    <h2>Générateur Badgir</h2>
+    <span class="tab-label">Onglet 1</span>
+  </div>
+  <div class="cards">
+
+    <div class="card" data-tags="slider param">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">param</span>
+        <span class="card-title">Curseur « Hauteur de la tour H (m) »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> la hauteur totale de la tour à vent, du sol jusqu'au sommet. Plage typique : <code>5 à 40 m</code>.</p>
+        <p><strong>Pourquoi ça compte :</strong> plus la tour est haute, plus la prise au vent est forte — et donc plus le débit d'air augmente. La relation n'est pas linéaire : doubler la hauteur ne double pas exactement le débit, car d'autres phénomènes entrent en jeu (frottements dans le conduit, profil vertical du vent).</p>
+        <div class="info-box"><strong>Référence historique :</strong> le Dolat-Abad de Yazd mesure 33,8 m. C'est l'un des plus grands Badgirs jamais construits.</div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="slider param">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">param</span>
+        <span class="card-title">Curseur « Largeur du conduit w (m) »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> la dimension transversale du conduit intérieur par lequel l'air circule. Plage typique : <code>0,5 à 3 m</code>.</p>
+        <p><strong>Pourquoi ça compte :</strong> un conduit plus large laisse passer plus d'air (section plus grande), mais augmente aussi le coût de construction. L'optimisation (Axe 3) cherche le meilleur compromis hauteur/largeur.</p>
+        <p>Le conduit du Dolat-Abad testé en soufflerie mesurait <strong>2,4 × 1,5 m</strong>.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="slider param">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">param</span>
+        <span class="card-title">Curseur « Vitesse du vent V (m/s) »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> la vitesse du vent en extérieur, mesurée à la hauteur du sommet de la tour. Plage typique : <code>1 à 20 m/s</code>.</p>
+        <p><strong>Règle de base :</strong> vent faible (1–2 m/s) → le Badgir fonctionne à peine. Vent modéré (4–6 m/s) → efficacité normale. Vent fort (10–20 m/s) → débit maximal, mais inconfort possible (courant d'air trop puissant).</p>
+        <div class="info-box"><strong>À Siraf (2012) :</strong> la vitesse extérieure oscillait entre 2,1 et 5,3 m/s au fil de la journée. Le débit intérieur variait de 0,8 à 2,1 m/s.</div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="slider param">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">param</span>
+        <span class="card-title">Curseur « Angle d'incidence α (°) »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> l'angle entre la direction du vent et la face principale du Badgir. À <code>0°</code>, le vent frappe de face (efficacité maximale). À <code>45°</code>, il arrive en biais.</p>
+        <p><strong>En pratique :</strong> le vent ne souffle pas toujours dans la direction idéale. Les Badgirs historiques avaient plusieurs conduits orientés dans des directions différentes pour capter le vent quelle que soit sa direction.</p>
+        <p>Les essais en soufflerie ont testé 4 angles : 0°, 15°, 30°, 45°. L'application interpole entre ces valeurs.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Le dessin de la tour (schéma SVG)</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Le schéma se met à jour en temps réel selon la hauteur (H) et la largeur (w) choisies. Il montre :</p>
+        <ul>
+          <li>La <strong>tour</strong> — rectangle proportionnel à H et w</li>
+          <li>Les <strong>flèches du vent</strong> entrant par le haut</li>
+          <li>La <strong>flèche d'air frais</strong> sortant dans la pièce en bas</li>
+        </ul>
+        <p>C'est une représentation schématique, pas un plan d'architecte. Elle sert à visualiser l'effet de vos réglages sur les proportions.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Carte « Débit Q » (m³/h)</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> le volume d'air traversant le Badgir chaque heure. C'est <em>la</em> mesure centrale de performance.</p>
+        <ul>
+          <li><code>Q &lt; 100 m³/h</code> — très faible, ventilation insuffisante</li>
+          <li><code>100–300 m³/h</code> — acceptable pour une pièce de 15–20 m²</li>
+          <li><code>300–600 m³/h</code> — bonne ventilation</li>
+          <li><code>600–980 m³/h</code> — excellent (valeur maximale obtenue en CFD)</li>
+        </ul>
+        <div class="formula-box">Q = GP(H, w, V, α) × f_geo(H, w) × f_angle(α)</div>
+        <p>Cette valeur est calculée par le modèle de substitution (Gaussian Process — voir Axe 1). Le <code>f_geo</code> est un facteur de correction géométrique calibré sur la soufflerie. Le <code>f_angle</code> traduit la perte d'efficacité quand le vent arrive en biais.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Carte « Efficacité thermique η » (%)</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> le pourcentage de refroidissement obtenu par rapport au refroidissement maximal théorique possible.</p>
+        <div class="formula-box">η = (T_ext − T_int) / (T_ext − T_sol) × 100 %</div>
+        <p>Où <code>T_sol</code> est la température du sol (supposée constante, environ 18–20°C). Plus η est grand, plus le Badgir est efficace.</p>
+        <div class="info-box"><strong>Mesuré à Siraf (2012) :</strong> η moyen = <strong>23,1 %</strong>. Pic à 14h avec un abaissement de 8,6°C.</div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Carte « Incertitude σ » du modèle</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> la marge d'erreur estimée du modèle d'IA pour la prédiction en cours.</p>
+        <p>Le Gaussian Process ne donne pas seulement une valeur de débit — il donne aussi une <strong>incertitude</strong>. Si σ est grand, c'est que vous explorez une zone de l'espace de conception éloignée des 6 points de calibration, et que la prédiction est moins fiable.</p>
+        <div class="tip-box"><strong>À surveiller :</strong> quand σ dépasse 20–30 m³/h, la prédiction est extrapolée. Traitez le résultat comme une tendance, pas une valeur exacte.</div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Carte « Coût de construction C » (€)</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> une estimation du coût de construction du Badgir selon ses dimensions.</p>
+        <div class="formula-box">C(H, w) = 180 × H × w + 420 × w² + 95 × H × w × 0,5</div>
+        <p>Les coefficients sont des estimations basées sur des coûts de maçonnerie et de terrassement typiques (en €/m²). Ce n'est pas une étude de prix formelle — c'est un modèle simplifié pour l'optimisation (Axe 3).</p>
+        <ul>
+          <li><code>180 × H × w</code> — coût des murs latéraux (surface × prix/m²)</li>
+          <li><code>420 × w²</code> — coût de la structure de base (emprise au sol)</li>
+          <li><code>95 × H × w × 0,5</code> — coût des fondations (environ 50% de la surface des murs)</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================== AXE 1 ======================== -->
+<div class="section" id="axe1">
+  <div class="section-header">
+    <span class="tab-icon">📊</span>
+    <h2>Axe 1 — Modèle de substitution (Gaussian Process)</h2>
+    <span class="tab-label">Onglet 2</span>
+  </div>
+  <div class="cards">
+
+    <div class="card" data-tags="intro formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag formula">formule</span>
+        <span class="card-title">C'est quoi un « Gaussian Process » (GP) ?</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Un <strong>Processus Gaussien</strong> est un modèle statistique qui apprend à partir de quelques exemples pour prédire des valeurs inconnues — et qui fournit en prime une estimation de son propre niveau d'incertitude.</p>
+        <p><strong>Analogie :</strong> imaginez un géographe qui mesure l'altitude en 6 endroits d'une montagne. Le GP peut déduire l'altitude probable en n'importe quel autre point, en estimant aussi à quel point il peut se tromper.</p>
+        <p>Ici, les 6 « mesures » sont les 6 simulations CFD de la thèse. Le GP prédit le débit Q pour n'importe quelle combinaison (H, w, V, α).</p>
+        <div class="formula-box">GP : {H, w, V, α} → Q (m³/h) ± σ</div>
+        <div class="info-box"><strong>Noyau utilisé :</strong> RBF (Radial Basis Function) + bruit blanc (WhiteKernel). Implémentation : scikit-learn. Résultat : R² = <strong>0,998</strong> en validation croisée leave-one-out.</div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique « Q = f(V) » — Courbe débit vs vitesse du vent</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong></p>
+        <ul>
+          <li>La <strong>courbe bleue</strong> — prédiction du GP pour les valeurs de V de 0 à 20 m/s, avec H et w fixés aux valeurs des curseurs</li>
+          <li>La <strong>bande grisée</strong> — intervalle de confiance à ±2σ (il y a 95% de chances que la vraie valeur soit dans cette bande)</li>
+          <li>Les <strong>points oranges</strong> — les 6 points de données CFD de la thèse (les seules vraies simulations)</li>
+        </ul>
+        <p><strong>Comment le lire :</strong> la courbe monte avec la vitesse du vent. Plus la bande grisée est large, plus le modèle est incertain dans cette zone. Les points oranges devraient tous tomber à l'intérieur (et ils le font — R²=0,998).</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique de validation — Prédit vs Réel</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Ce graphique compare les débits <em>prédits</em> par le GP aux débits <em>mesurés</em> en CFD, pour les 6 points d'entraînement.</p>
+        <p><strong>Comment le lire :</strong> si tous les points s'alignent sur la droite diagonale à 45°, le modèle est parfait. L'axe X = valeur CFD réelle. L'axe Y = valeur prédite par le GP. Un point éloigné de la diagonale = une erreur de prédiction.</p>
+        <p>Avec R²=0,998, les points sont pratiquement sur la diagonale.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result param">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Tableau « Paramètres du GP »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Ce tableau affiche les paramètres internes du modèle après entraînement :</p>
+        <ul>
+          <li><strong>Longueur d'échelle (ℓ)</strong> — à quelle distance deux configurations peuvent être « similaires ». Une grande valeur signifie que le modèle lisse beaucoup, une petite valeur = modèle très réactif aux petites variations.</li>
+          <li><strong>Variance du signal (α²)</strong> — amplitude typique des variations prédites.</li>
+          <li><strong>Niveau de bruit (σ²)</strong> — part de la variabilité attribuée à du « bruit » plutôt qu'à une vraie tendance physique.</li>
+          <li><strong>R²</strong> — coefficient de détermination. 1,0 = prédiction parfaite. 0,998 = excellent.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================== AXE 2 ======================== -->
+<div class="section" id="axe2">
+  <div class="section-header">
+    <span class="tab-icon">🧠</span>
+    <h2>Axe 2 — Réseau de neurones PINN (Poiseuille)</h2>
+    <span class="tab-label">Onglet 3</span>
+  </div>
+  <div class="cards">
+
+    <div class="card" data-tags="intro formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag formula">formule</span>
+        <span class="card-title">C'est quoi un PINN ?</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Un <strong>PINN</strong> (Physics-Informed Neural Network) est un réseau de neurones qui apprend à résoudre une équation physique — sans avoir besoin d'une simulation CFD complète.</p>
+        <p><strong>La différence avec un réseau classique :</strong> un réseau classique apprend uniquement à partir de données. Un PINN apprend aussi à respecter les lois de la physique — ses erreurs sont pénalisées si les équations ne sont pas satisfaites.</p>
+        <div class="formula-box">Équation de Poiseuille 1D : d²u/dy² + 2 = 0</div>
+        <p>Cette équation décrit le profil de vitesse de l'air dans un conduit rectangulaire à section constante. La solution exacte est parabolique : l'air va le plus vite au centre et s'annule aux parois.</p>
+        <div class="info-box"><strong>Architecture :</strong> 2 couches cachées × 64 neurones (activation Tanh) · 4 000 époques (Adam, lr=10⁻³) · 200 points de collocation. Erreur L² finale : <strong>1,77 × 10⁻⁴</strong>.</div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique « Profil de vitesse Poiseuille »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong></p>
+        <ul>
+          <li>La <strong>courbe bleue (PINN)</strong> — profil de vitesse prédit par le réseau de neurones, de y=0 (paroi gauche) à y=1 (paroi droite)</li>
+          <li>La <strong>courbe orange pointillée (Exact)</strong> — solution mathématique exacte de l'équation de Poiseuille</li>
+        </ul>
+        <p><strong>Comment le lire :</strong> les deux courbes doivent se superposer. La forme en cloche (parabole) est normale — l'air va plus vite au centre du conduit qu'aux bords (effet de la friction avec les parois). Si les deux courbes se confondent, le réseau a appris correctement la physique.</p>
+        <p><strong>Unités :</strong> y est normalisé de 0 à 1 (position dans la largeur du conduit). La vitesse u est également adimensionnelle dans cette représentation.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique « Convergence de la loss » (perte d'entraînement)</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong> la courbe d'erreur du réseau au fil des 4 000 étapes d'entraînement (« époques »).</p>
+        <p><strong>Comment le lire :</strong> la courbe descend de gauche à droite — le réseau apprend progressivement. Plus elle descend bas, meilleur est le modèle. Une courbe qui « plateaue » tôt = le réseau a convergé. Une courbe qui oscille = problème d'hyperparamètres (taux d'apprentissage trop grand, par exemple).</p>
+        <p>La loss finale est ici de l'ordre de <code>10⁻⁴</code>, ce qui correspond à une erreur L² de 1,77 × 10⁻⁴ — très faible.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Carte de chaleur 2D (heatmap du conduit)</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong> une vue de dessus du conduit Badgir, colorée selon la vitesse de l'air à chaque point.</p>
+        <ul>
+          <li><strong>Couleurs chaudes (rouge/jaune)</strong> — vitesse élevée (centre du conduit)</li>
+          <li><strong>Couleurs froides (bleu)</strong> — vitesse faible (proche des parois)</li>
+        </ul>
+        <p>Cette carte change quand vous modifiez H (hauteur), w (largeur) ou V (vitesse du vent) dans la barre latérale. Elle montre l'extension du profil Poiseuille en 2D sur la section rectangulaire du conduit.</p>
+        <div class="tip-box">Un conduit carré (H≈w) donnera une carte quasi-circulaire. Un conduit très allongé (H»w) donnera des zones rouges étroites au centre.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================== AXE 3 ======================== -->
+<div class="section" id="axe3">
+  <div class="section-header">
+    <span class="tab-icon">🔧</span>
+    <h2>Axe 3 — Optimisation géométrique</h2>
+    <span class="tab-label">Onglet 4</span>
+  </div>
+  <div class="cards">
+
+    <div class="card" data-tags="intro">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag">intro</span>
+        <span class="card-title">Quel est l'objectif de cet onglet ?</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Cet onglet répond à une question pratique : <em>quel est le meilleur Badgir possible, pour un budget donné ?</em></p>
+        <p>On cherche à <strong>maximiser le débit Q</strong> (le plus d'air possible) tout en <strong>respectant un budget de construction</strong>. C'est un problème d'optimisation bi-objectif — deux objectifs qui s'opposent partiellement (un Badgir plus grand donne plus de débit, mais coûte plus cher).</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="slider param">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">param</span>
+        <span class="card-title">Curseur « Budget maximum C_max (€) »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que c'est :</strong> le budget maximum que vous êtes prêt à dépenser pour construire le Badgir.</p>
+        <p><strong>Effet :</strong> plus le budget est élevé, plus l'optimisation peut proposer des tours grandes (H élevé) ou larges (w élevé), et donc un débit Q plus important.</p>
+        <p>Avec un budget très faible, l'algorithme est contraint à des géométries modestes. Le front de Pareto (voir ci-dessous) montre toutes les solutions possibles sous cette contrainte.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="btn">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag btn">bouton</span>
+        <span class="card-title">Bouton « Lancer l'optimisation »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que ça fait :</strong> déclenche l'algorithme d'optimisation (<code>differential_evolution</code> de scipy) pour trouver la meilleure combinaison (H, w) sous la contrainte de budget.</p>
+        <p><strong>Algorithme :</strong> évolution différentielle — une technique inspirée de l'évolution biologique. Elle crée une population de solutions candidates, les fait « évoluer » par croisements et mutations, et converge vers la meilleure.</p>
+        <div class="formula-box">Maximiser Q(H, w, V, α) sous contrainte C(H, w) ≤ C_max</div>
+        <p><strong>Paramètres internes :</strong> seed=42 (résultats reproductibles), popsize=12, maxiter=300. Le calcul prend quelques secondes.</p>
+        <p><strong>Résultat :</strong> la solution optimale (H*, w*, Q*) est affichée en haut, et le front de Pareto est tracé.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique « Front de Pareto »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>C'est quoi un front de Pareto ?</strong> L'ensemble des solutions pour lesquelles on ne peut pas améliorer un objectif sans dégrader l'autre. Ici : toutes les combinaisons (H, w) qui maximisent Q pour leur coût.</p>
+        <p><strong>Ce que vous voyez :</strong></p>
+        <ul>
+          <li>L'<strong>axe X</strong> — coût de construction C (€)</li>
+          <li>L'<strong>axe Y</strong> — débit Q (m³/h)</li>
+          <li>Les <strong>points gris</strong> — 800 designs aléatoires générés par Monte-Carlo (tirages aléatoires de H et w)</li>
+          <li>La <strong>courbe bleue</strong> — le front de Pareto (solutions non-dominées)</li>
+          <li>L'<strong>étoile rouge</strong> — la solution optimale trouvée par l'algorithme</li>
+        </ul>
+        <p><strong>Comment le lire :</strong> cherchez le « coude » de la courbe bleue — c'est là que chaque euro dépensé supplémentaire rapporte le moins de débit en plus. C'est souvent le meilleur compromis pratique.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique « Analyse de sensibilité »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong> un graphique en barres montrant l'impact de chaque paramètre sur le débit Q.</p>
+        <div class="formula-box">Sensibilité = ∂Q/∂H, ∂Q/∂w, ∂Q/∂V</div>
+        <p>Ces dérivées partielles mesurent : « si j'augmente H d'un mètre (w et V inchangés), de combien Q augmente-t-il ? ». Plus la barre est grande, plus ce paramètre a d'influence.</p>
+        <p><strong>Résultat typique :</strong> la vitesse du vent V a souvent l'influence la plus forte. La hauteur H vient ensuite. La largeur w a un effet important aussi, mais surtout via le coût.</p>
+        <div class="tip-box">L'analyse de sensibilité aide à décider <em>où concentrer les efforts</em> : si V est le paramètre le plus influent, il vaut mieux choisir un site exposé au vent plutôt que d'augmenter H.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================== SIRAF ======================== -->
+<div class="section" id="siraf">
+  <div class="section-header">
+    <span class="tab-icon">📡</span>
+    <h2>Siraf in situ</h2>
+    <span class="tab-label">Onglet 5</span>
+  </div>
+  <div class="cards">
+
+    <div class="card" data-tags="intro">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag">intro</span>
+        <span class="card-title">D'où viennent ces données ?</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Ces données sont les <strong>mesures réelles</strong> effectuées lors de la thèse de 2014, sur un Badgir du site archéologique de <strong>Siraf</strong> (province de Fars, Iran), en 2012.</p>
+        <ul>
+          <li><strong>Durée :</strong> 10 heures consécutives (8h à 17h)</li>
+          <li><strong>Mesures :</strong> vitesse et température du vent extérieur, vitesse et température de l'air intérieur (à la sortie du conduit)</li>
+          <li><strong>Résultat clé :</strong> ΔT max = <strong>8,6°C</strong> à 14h — efficacité thermique moyenne de <strong>23,1%</strong></li>
+        </ul>
+        <p>C'est un <strong>patrimoine empirique rare</strong> : ces sites sont d'accès difficile et peu instrumentés dans la littérature internationale.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique « Températures intérieure et extérieure »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong> deux courbes sur l'axe de la journée (8h–17h).</p>
+        <ul>
+          <li><strong>Courbe rouge (T_ext)</strong> — température de l'air extérieur. Monte jusqu'à 38°C en milieu d'après-midi.</li>
+          <li><strong>Courbe bleue (T_int)</strong> — température à la sortie du conduit Badgir. Reste plus fraîche tout au long de la journée.</li>
+        </ul>
+        <p><strong>Comment le lire :</strong> l'écart entre les deux courbes est le refroidissement assuré par le Badgir. Cet écart est maximal à 14h, quand la chaleur extérieure est la plus forte — ce qui montre que le Badgir est le plus utile précisément quand on en a le plus besoin.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique « ΔT par heure » (barre)</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong> un histogramme montrant l'abaissement de température (ΔT = T_ext − T_int) pour chaque heure de la journée.</p>
+        <p><strong>Comment le lire :</strong> les barres les plus hautes correspondent aux moments où le Badgir est le plus efficace. La barre de 14h devrait être la plus haute (ΔT ≈ 8,6°C).</p>
+        <div class="info-box">Un ΔT de 8°C dans une pièce exposée à 38°C en plein été, sans aucune énergie consommée : c'est la performance concrète d'un Badgir traditionnel.</div>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Tableau des données brutes</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Le tableau affiche les 10 mesures horaires avec 5 colonnes :</p>
+        <ul>
+          <li><strong>heure</strong> — de 8 à 17</li>
+          <li><strong>V_ext</strong> — vitesse du vent extérieur (m/s)</li>
+          <li><strong>T_ext</strong> — température extérieure (°C)</li>
+          <li><strong>V_int</strong> — vitesse de l'air dans le conduit (m/s)</li>
+          <li><strong>T_int</strong> — température intérieure à la sortie du conduit (°C)</li>
+        </ul>
+        <p>Ces données sont <strong>reconstituées</strong> à partir des résultats publiés dans la thèse (les fichiers CSV originaux avaient des en-têtes différents). Les valeurs reflètent fidèlement les mesures réelles.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================== SOUFFLERIE ======================== -->
+<div class="section" id="soufflerie">
+  <div class="section-header">
+    <span class="tab-icon">💨</span>
+    <h2>Soufflerie (coefficients de pression)</h2>
+    <span class="tab-label">Onglet 6</span>
+  </div>
+  <div class="cards">
+
+    <div class="card" data-tags="intro">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag">intro</span>
+        <span class="card-title">D'où viennent ces données ?</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Ces données proviennent des <strong>essais en soufflerie</strong> réalisés à Ville-d'Avray (France) sur une <strong>maquette à l'échelle 1/50</strong> du Dolat-Abad de Yazd (H_réel = 33,8 m, conduit 2,4 × 1,5 m).</p>
+        <ul>
+          <li><strong>140 prises de pression</strong> réparties sur 6 faces de la tour</li>
+          <li><strong>4 angles d'incidence</strong> testés : 0°, 15°, 30°, 45°</li>
+          <li><strong>Objectif :</strong> mesurer les coefficients de pression Cp sur chaque face, pour calibrer le modèle CFD</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" data-tags="formula">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag formula">formule</span>
+        <span class="card-title">C'est quoi un coefficient de pression Cp ?</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Le coefficient de pression Cp mesure <strong>comment le vent « appuie » ou « aspire »</strong> sur chaque face d'un bâtiment.</p>
+        <div class="formula-box">Cp = (P − P_infini) / (0,5 × ρ × V²)</div>
+        <p>Où :</p>
+        <ul>
+          <li><code>P</code> — pression mesurée sur la face</li>
+          <li><code>P_infini</code> — pression atmosphérique de référence (loin de la tour)</li>
+          <li><code>ρ</code> — densité de l'air (~1,2 kg/m³)</li>
+          <li><code>V</code> — vitesse du vent de référence</li>
+        </ul>
+        <p><strong>Valeurs typiques :</strong></p>
+        <ul>
+          <li><code>Cp > 0</code> — pression positive (le vent pousse sur cette face)</li>
+          <li><code>Cp < 0</code> — dépression (le vent aspire, comme sur le toit d'une maison)</li>
+          <li><code>Cp ≈ +1</code> — face directement frappée par le vent (stagnation totale)</li>
+        </ul>
+        <p>Les Cp sur les 6 faces permettent de calculer le gradient de pression moteur qui pousse l'air dans le conduit.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="param">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">param</span>
+        <span class="card-title">Sélecteur « Angle d'incidence »</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Un menu ou bouton radio permet de choisir parmi les 4 angles testés : <code>0°</code>, <code>15°</code>, <code>30°</code>, <code>45°</code>.</p>
+        <p><strong>À 0° :</strong> le vent frappe la face Nord de plein fouet. Cp Nord est fortement positif, Cp Sud est négatif (aspiration). C'est le cas le plus favorable pour le débit.</p>
+        <p><strong>À 45° :</strong> le vent arrive en diagonale. Les Cp s'équilibrent entre les faces adjacentes. Le débit diminue.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Graphique en barres — Cp par face</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong> 6 barres correspondant aux 6 faces de la tour (Nord, Sud, Est, Ouest, Dessus, Dessous).</p>
+        <ul>
+          <li><strong>Barres positives (bleues)</strong> — faces sous pression (le vent entre)</li>
+          <li><strong>Barres négatives (rouges)</strong> — faces sous dépression (le vent sort ou aspire)</li>
+        </ul>
+        <p><strong>Comment le lire :</strong> à 0°, Nord est la face d'entrée (+Cp élevé) et Sud est la face de sortie (−Cp). La différence ΔCp entre Nord et Sud détermine la force qui aspire l'air dans le conduit.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="result">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag result">résultat</span>
+        <span class="card-title">Tableau pivot — Cp (faces × angles)</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p><strong>Ce que vous voyez :</strong> un tableau avec les faces en lignes et les angles (0°, 15°, 30°, 45°) en colonnes. Chaque cellule contient le Cp mesuré.</p>
+        <p><strong>Comment le lire :</strong> cherchez comment les valeurs évoluent horizontalement (effet de l'angle) pour chaque face. La face Nord perd de son Cp positif quand l'angle augmente — c'est la réduction d'efficacité due à l'orientation.</p>
+        <div class="info-box">Ces valeurs ont servi à calibrer le facteur angulaire <code>f_angle(α)</code> utilisé dans le calcul du débit Q dans le Générateur Badgir.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================== GLOSSAIRE ======================== -->
+<div class="section" id="glossaire">
+  <div class="section-header">
+    <span class="tab-icon">📚</span>
+    <h2>Glossaire des termes techniques</h2>
+    <span class="tab-label">Référence</span>
+  </div>
+  <div class="cards">
+
+    <div class="card" data-tags="glossaire">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">terme</span>
+        <span class="card-title">CFD — Computational Fluid Dynamics</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Simulation numérique des écoulements de fluide (ici, l'air). Le logiciel Fluent (Ansys) a été utilisé pour simuler 6 configurations (vitesses de vent différentes). Ces simulations ont pris des heures de calcul chacune. Le GP remplace ce calcul en quelques millisecondes.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="glossaire">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">terme</span>
+        <span class="card-title">k-ε — Modèle de turbulence</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Le modèle k-ε (k = énergie cinétique turbulente, ε = taux de dissipation) est le modèle de turbulence le plus courant en ingénierie. Il permet de simuler des écoulements turbulents (Reynolds élevé) sans résoudre chaque tourbillon individuellement. C'est un bon compromis précision/coût de calcul.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="glossaire">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">terme</span>
+        <span class="card-title">R² — Coefficient de détermination</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Mesure de la qualité d'un modèle prédictif. Varie de 0 à 1 (ou de −∞ à 1 pour les mauvais modèles). <code>R²=1</code> = prédiction parfaite. <code>R²=0,998</code> = le modèle explique 99,8% de la variance des données — excellent.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="glossaire">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">terme</span>
+        <span class="card-title">Erreur L² — Norme de l'erreur</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>La norme L² est la racine carrée de la moyenne des erreurs au carré — similaire à la RMSE. Une erreur L² de <code>1,77 × 10⁻⁴</code> sur le profil Poiseuille signifie que le PINN prédit le profil de vitesse avec une erreur moyenne de 0,000177 (en valeurs normalisées) — très précis.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="glossaire">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">terme</span>
+        <span class="card-title">Monte-Carlo — Simulation stochastique</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Méthode qui tire aléatoirement un grand nombre de valeurs (ici 800 combinaisons H, w) pour explorer un espace de conception. En évaluant chaque combinaison avec le GP (très rapide), on obtient une vue complète du spectre de performances possibles.</p>
+      </div>
+    </div>
+
+    <div class="card" data-tags="glossaire">
+      <div class="card-head" onclick="toggle(this)">
+        <span class="card-tag param">terme</span>
+        <span class="card-title">Évolution différentielle</span>
+        <span class="card-caret">▶</span>
+      </div>
+      <div class="card-body" hidden>
+        <p>Algorithme d'optimisation inspiré de l'évolution biologique. Il maintient une « population » de solutions candidates, qu'il fait évoluer par des opérations de croisement et de mutation. Il est particulièrement adapté aux fonctions non-linéaires et non-convexes (comme Q en fonction de H et w).</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="no-results" id="noResults" hidden>
+  Aucun résultat pour cette recherche. Essayez un autre terme.
+</div>
+
+</div><!-- #content -->
+</main>
+</div>
+
+<script>
+// TOGGLE CARDS
+function toggle(head) {
+  const card = head.parentElement;
+  const body = card.querySelector('.card-body');
+  const caret = card.querySelector('.card-caret');
+  const isOpen = !body.hidden;
+  body.hidden = isOpen;
+  card.toggleAttribute('open', !isOpen);
+}
+
+// SEARCH
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.card');
+  const sections = document.querySelectorAll('.section');
+  let anyVisible = false;
+
+  // Remove existing highlights
+  document.querySelectorAll('mark').forEach(m => {
+    const text = m.textContent;
+    m.outerHTML = text;
+  });
+
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const match = !q || text.includes(q);
+    card.style.display = match ? '' : 'none';
+    if (match) anyVisible = true;
+  });
+
+  sections.forEach(sec => {
+    const visibleCards = [...sec.querySelectorAll('.card')].filter(c => c.style.display !== 'none');
+    sec.style.display = visibleCards.length ? '' : 'none';
+  });
+
+  document.getElementById('noResults').hidden = anyVisible;
+
+  // Auto-open matching cards
+  if (q.length > 2) {
+    cards.forEach(card => {
+      if (card.style.display !== 'none') {
+        const body = card.querySelector('.card-body');
+        if (body) body.hidden = false;
+        card.setAttribute('open', '');
+      }
+    });
+  }
+});
+
+// FILTER BY TAG
+function filterTag(type) {
+  const cards = document.querySelectorAll('.card');
+  const sections = document.querySelectorAll('.section');
+  cards.forEach(card => {
+    if (type === 'all') { card.style.display = ''; return; }
+    const tags = (card.dataset.tags || '').split(' ');
+    card.style.display = tags.includes(type) ? '' : 'none';
+  });
+  sections.forEach(sec => {
+    const vis = [...sec.querySelectorAll('.card')].filter(c => c.style.display !== 'none');
+    sec.style.display = vis.length ? '' : 'none';
+  });
+  document.getElementById('noResults').hidden = true;
+  searchInput.value = '';
+}
+
+// THEME TOGGLE
+const themeBtn = document.getElementById('themeBtn');
+let theme = 'auto';
+try { theme = localStorage.getItem('theme') || 'auto'; } catch(e) {}
+applyTheme(theme);
+themeBtn.addEventListener('click', () => {
+  theme = theme === 'dark' ? 'light' : theme === 'light' ? 'auto' : 'dark';
+  applyTheme(theme);
+  try { localStorage.setItem('theme', theme); } catch(e) {}
+});
+function applyTheme(t) {
+  if (t === 'dark') { document.documentElement.dataset.theme = 'dark'; themeBtn.textContent = '☀️'; }
+  else if (t === 'light') { document.documentElement.dataset.theme = 'light'; themeBtn.textContent = '🌙'; }
+  else { delete document.documentElement.dataset.theme; themeBtn.textContent = '🌓'; }
+}
+
+// SMOOTH SCROLL + ACTIVE NAV
+document.querySelectorAll('.sidebar a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    document.querySelectorAll('.sidebar a').forEach(l => l.classList.remove('active'));
+    a.classList.add('active');
+  });
+});
+
+// INTERSECTION OBSERVER for active nav
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      document.querySelectorAll('.sidebar a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('.section').forEach(s => io.observe(s));
+</script>
+</body>
+</html>
+
+</body></html>
