@@ -141,7 +141,22 @@ def load_soufflerie():
 def load_cfd():
     p = os.path.join(DATA_DIR, "cfd_debit.csv")
     if os.path.exists(p):
-        return pd.read_csv(p)
+        df = pd.read_csv(p)
+        # Normalise les noms de colonnes (insensible à la casse/espaces)
+        df.columns = [c.strip() for c in df.columns]
+        col_map = {}
+        for c in df.columns:
+            cl = c.lower().replace(" ","_").replace("-","_")
+            if "v_vent" in cl or (cl.startswith("v") and "vent" in cl):
+                col_map[c] = "V_vent"
+            elif "soufflerie" in cl:
+                col_map[c] = "Q_soufflerie"
+            elif "cfd" in cl or "q_cfd" in cl:
+                col_map[c] = "Q_cfd"
+        df = df.rename(columns=col_map)
+        if "V_vent" in df.columns and "Q_cfd" in df.columns:
+            return df
+    # Fallback : données thèse 2014
     return pd.DataFrame({
         "V_vent":       V_CFD,
         "Q_soufflerie": Q_CFD * 0.96,
