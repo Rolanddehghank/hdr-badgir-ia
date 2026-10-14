@@ -678,12 +678,12 @@ with tab6:
 
 st.divider()
 st.caption("HDR Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine · Données : thèse 2014, soufflerie Ville-d'Avray, CFD Fluent k-ε, mesures in situ Siraf 2012")
-# -- TAB 7 � AIDE -------------------------------------------------------------
+# -- TAB 7 � AIDE -------------------------------------------------------------
 with tab7:
     st.markdown("### Guide d'utilisation")
     aide_path = os.path.join(os.path.dirname(__file__), "aide_app.html")
     try:
-        with open(aide_path, "r", encoding="utf-8") as f:
+       with open(aide_path, "r", encoding="latin-1") as f:
             st.components.v1.html(f.read(), height=820, scrolling=True)
     except FileNotFoundError:
         st.warning(f"Fichier aide_app.html introuvable dans {os.path.dirname(__file__)}")
