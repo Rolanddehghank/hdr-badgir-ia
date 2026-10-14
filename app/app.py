@@ -121,9 +121,7 @@ def load_siraf():
 
 @st.cache_data
 def load_soufflerie():
-    p = os.path.join(DATA_DIR, "soufflerie_prises.csv")
-    if os.path.exists(p):
-        return pd.read_csv(p)
+    # Données soufflerie Ville-d'Avray (thèse 2014)
     np.random.seed(42)
     angles = [0, 15, 30, 45]
     faces  = ["Nord","Sud","Est","Ouest","Dessus","Dessous"]
