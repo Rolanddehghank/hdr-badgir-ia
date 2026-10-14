@@ -280,13 +280,14 @@ with st.sidebar:
     st.caption("GP · RBF kernel · R²=0.998 · 6 pts CFD Fluent k-ε")
 
 # ── TABS ──────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🏛️ Générateur Badgir",
-    "📊 Axe 1 — Surrogate GP",
-    "🧠 Axe 2 — PINN",
-    "🔧 Axe 3 — Optimisation",
-    "📡 Siraf in situ",
-    "💨 Soufflerie"
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    "Générateur Badgir",
+    "Axe 1 — Surrogate GP",
+    "Axe 2 — PINN",
+    "Axe 3 — Optimisation",
+    "Siraf in situ",
+    "Soufflerie",
+    "Aide"
 ])
 
 # ── TAB 1 ─────────────────────────────────────────────────────────────────────
@@ -301,9 +302,9 @@ with tab1:
 
     with col_metrics:
         st.markdown("#### Résultats GP surrogate")
-        if q_pred >= 400:   perf, pc = ("🟢 Excellente", "#2E7D32")
-        elif q_pred >= 200: perf, pc = ("🟡 Bonne",      "#F57F17")
-        else:               perf, pc = ("🔴 Insuffisante","#C62828")
+        if q_pred >= 400:   perf, pc = ("Excellente", "#2E7D32")
+        elif q_pred >= 200: perf, pc = ("Bonne",      "#F57F17")
+        else:               perf, pc = ("Insuffisante","#C62828")
 
         st.markdown(f"""
         <div class="metric-card">
@@ -386,7 +387,7 @@ with tab2:
     })
     st.dataframe(kernel_params, use_container_width=True, hide_index=True)
 
-    with st.expander("🔬 Code scikit-learn du GP"):
+    with st.expander("Code scikit-learn du GP"):
         st.code("""
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C, WhiteKernel
@@ -434,7 +435,7 @@ with tab3:
         st.pyplot(fig); plt.close(fig)
 
     # Heatmap 2D conduit
-    st.markdown("#### 🗺️ Champ de vitesse 2D — Section verticale du conduit Badgir")
+    st.markdown("#### Champ de vitesse 2D — Section verticale du conduit Badgir")
     st.caption("Extension du profil Poiseuille 1D vers la section réelle du conduit (PINN 2D en cours de développement — Axe 2+3)")
     fig2, ax2 = plt.subplots(figsize=(10, 4))
     U_max = draw_pinn_2d(ax2, H_conduit=hauteur, w_conduit=largeur_conduit, v_vent=v_vent)
@@ -455,7 +456,7 @@ with tab3:
             "Valeur finale":["8.3×10⁻⁵","4.1×10⁻⁵","3.5×10⁻⁵","1.77×10⁻⁴"]
         }), use_container_width=True, hide_index=True)
 
-    with st.expander("🧠 Code PyTorch complet"):
+    with st.expander("Code PyTorch complet"):
         st.code("""
 import torch, torch.nn as nn
 
@@ -504,7 +505,7 @@ with tab4:
         h_max    = st.slider("H max (m)", 12.0, 30.0, 20.0, 1.0)
         w_min    = st.slider("w min (m)", 0.3, 0.8, 0.4, 0.1)
         w_max    = st.slider("w max (m)", 1.0, 3.0, 1.8, 0.1)
-        run_opt  = st.button("🔧 Lancer l'optimisation", type="primary")
+        run_opt  = st.button("Lancer l'optimisation", type="primary")
 
     with col_opt_res:
         if run_opt:
@@ -528,7 +529,7 @@ with tab4:
             T_opt  = predict_t_int(Q_opt, t_ext)
             eff_c  = Q_opt / max(C_opt, 1) * 1000  # m³/h par k€
 
-            st.success("✅ Optimisation convergée")
+            st.success("Optimisation convergée")
             col_r1, col_r2, col_r3 = st.columns(3)
             col_r1.markdown(f"""<div class="opt-box"><div class="lab">Hauteur optimale</div><div class="val">{H_opt:.1f} m</div></div>""", unsafe_allow_html=True)
             col_r2.markdown(f"""<div class="opt-box"><div class="lab">Largeur conduit opt.</div><div class="val">{w_opt:.2f} m</div></div>""", unsafe_allow_html=True)
@@ -540,10 +541,10 @@ with tab4:
 
             st.session_state["opt_result"] = (H_opt, w_opt, Q_opt, C_opt)
         else:
-            st.info("👈 Ajuste les paramètres puis clique sur **Lancer l'optimisation**")
+            st.info("Ajustez les paramètres puis cliquez sur **Lancer l'optimisation**")
 
     st.markdown("---")
-    st.markdown("#### 📈 Front de Pareto — Q(m³/h) vs Coût construction (k€)")
+    st.markdown("#### Front de Pareto — Q(m³/h) vs Coût construction (k€)")
     st.caption("Chaque point représente un design (H, w) évalué par le GP surrogate · V_vent = sidebar")
 
     col_pareto, col_sens = st.columns(2)
@@ -592,7 +593,7 @@ with tab4:
         plt.tight_layout()
         st.pyplot(fig); plt.close(fig)
 
-    with st.expander("🔬 Code optimisation (scipy)"):
+    with st.expander("Code optimisation (scipy)"):
         st.code("""
 from scipy.optimize import differential_evolution
 
@@ -677,3 +678,12 @@ with tab6:
 
 st.divider()
 st.caption("HDR Roland Dehghan Kamaragi · Chaire Architecture & Intelligences · ENSA Paris-Val de Seine · Données : thèse 2014, soufflerie Ville-d'Avray, CFD Fluent k-ε, mesures in situ Siraf 2012")
+# -- TAB 7 � AIDE -------------------------------------------------------------
+with tab7:
+    st.markdown("### Guide d'utilisation")
+    aide_path = os.path.join(os.path.dirname(__file__), "aide_app.html")
+    try:
+        with open(aide_path, "r", encoding="utf-8") as f:
+            st.components.v1.html(f.read(), height=820, scrolling=True)
+    except FileNotFoundError:
+        st.warning(f"Fichier aide_app.html introuvable dans {os.path.dirname(__file__)}")
