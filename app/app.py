@@ -178,59 +178,119 @@ def load_cfd():
         "Q_cfd":        Q_CFD,
     })
 
-# ── Badgir drawing ────────────────────────────────────────────────────────────
+# ── Badgir drawing — élévation architecturale précise ────────────────────────
 def draw_badgir(ax, type_badgir, hauteur, largeur_conduit, orientation, v_vent, q_predit, sigma_q):
-    ax.set_facecolor("#f0f4f8"); ax.set_xlim(0,10); ax.set_ylim(0,14); ax.axis("off")
-    cx, base_y, w_tour = 5.0, 1.5, 2.2
-    c_tour = {"4-conduits":"#8B4513","2-conduits":"#5C3317","Malqaf":"#A0522D"}.get(type_badgir,"#8B4513")
-    h_vis = hauteur * 0.55
+    ax.set_facecolor("#eef2f7"); ax.set_xlim(0,10); ax.set_ylim(0,14); ax.axis("off")
 
-    ax.add_patch(FancyBboxPatch((cx-w_tour/2, base_y), w_tour, h_vis,
-        boxstyle="square,pad=0", facecolor=c_tour, edgecolor="#3d1e00", lw=1.5, alpha=0.85))
+    cx     = 5.8          # centre horizontal
+    base_y = 1.2          # niveau du sol
+    w_fus  = 1.9          # largeur du fût
+    h_vis  = hauteur * 0.50
+    h_fus  = h_vis * 0.62
+    h_tete = h_vis * 0.38
+    w_tete = w_fus + 0.4
 
     n_cond = 4 if type_badgir=="4-conduits" else (2 if type_badgir=="2-conduits" else 1)
-    head_h = 0.4 * n_cond
-    head_top = base_y + h_vis + head_h
-    ax.add_patch(FancyBboxPatch((cx-w_tour/2-0.3, base_y+h_vis), w_tour+0.6, head_h,
-        boxstyle="square,pad=0", facecolor="#c8905a", edgecolor="#3d1e00", lw=1.5, alpha=0.9))
 
-    w_c = largeur_conduit * 0.7
-    offsets = [-w_c, 0, w_c] if n_cond >= 3 else ([-w_c/2, w_c/2] if n_cond==2 else [0])
-    for dx in offsets:
-        ax.plot([cx+dx, cx+dx], [base_y+0.3, base_y+h_vis],
-                color="white", lw=1, linestyle="--", alpha=0.55)
+    # ── sol + fondation
+    ax.fill_between([0,10],[base_y]*2,[0,0], color="#d4c5a0", alpha=0.55)
+    ax.plot([0,10],[base_y]*2, color="#9a8560", lw=1.5)
+    ax.add_patch(FancyBboxPatch((cx-w_fus/2-0.12, base_y-0.18), w_fus+0.24, 0.22,
+        boxstyle="square,pad=0", facecolor="#7a5c3a", edgecolor="#3d2a10", lw=1, alpha=0.9))
 
-    ax.annotate("", xy=(cx-w_tour/2-0.1, head_top-0.5), xytext=(cx-w_tour/2-2.5, head_top-0.5),
-                arrowprops=dict(arrowstyle="-|>", color="#4a90d9", lw=2))
-    ax.annotate("", xy=(cx-w_tour/2-0.1, head_top-0.9), xytext=(cx-w_tour/2-2.2, head_top-0.9),
-                arrowprops=dict(arrowstyle="-|>", color="#4a90d9", lw=1.4, alpha=0.7))
-    ax.text(cx-w_tour/2-2.6, head_top-0.2, f"V = {v_vent} m/s",
-            fontsize=9, color="#1565C0", fontweight="bold")
+    # ── fût (corps de la tour) avec joints de briques
+    ax.add_patch(FancyBboxPatch((cx-w_fus/2, base_y), w_fus, h_fus,
+        boxstyle="square,pad=0", facecolor="#c9a87a", edgecolor="#5a3a1a", lw=1.3, alpha=0.92))
+    n_joints = max(6, int(h_fus / 0.28))
+    for i in range(1, n_joints):
+        y = base_y + i * h_fus / n_joints
+        ax.plot([cx-w_fus/2, cx+w_fus/2], [y,y], color="#e8d5b0", lw=0.5, alpha=0.7)
+    # cloisons intérieures (conduits)
+    if n_cond >= 2:
+        ax.plot([cx, cx], [base_y+0.15, base_y+h_fus], color="#7a5c3a", lw=0.8, ls="--", alpha=0.45)
+    if n_cond == 4:
+        for dx in [-w_fus/4, w_fus/4]:
+            ax.plot([cx+dx, cx+dx], [base_y+0.15, base_y+h_fus],
+                    color="#7a5c3a", lw=0.5, ls=":", alpha=0.35)
 
-    ax.annotate("", xy=(cx+w_tour/2+1.8, base_y+0.5), xytext=(cx+w_tour/2+0.1, base_y+0.5),
-                arrowprops=dict(arrowstyle="-|>", color="#43a047", lw=2))
-    ax.text(cx+w_tour/2+0.2, base_y+1.1, "Air frais", fontsize=8, color="#2E7D32")
+    # ── tête (partie haute avec ouvertures)
+    y_tete = base_y + h_fus
+    ax.add_patch(FancyBboxPatch((cx-w_tete/2, y_tete), w_tete, h_tete,
+        boxstyle="square,pad=0", facecolor="#a87848", edgecolor="#5a3a1a", lw=1.3, alpha=0.93))
 
-    ax.fill_between([0,10],[base_y-0.05]*2,[0,0], color="#c8b88a", alpha=0.4)
-    ax.plot([0,10],[base_y-0.05]*2, color="#8d7645", lw=1.5)
+    # ouvertures verticales (fenêtres à vent)
+    n_ouv   = 2 if n_cond >= 2 else 1
+    marge   = 0.20
+    pier_w  = 0.17
+    tot_gap = w_tete - 2*marge - (n_ouv+1)*pier_w
+    ouv_w   = max(0.10, tot_gap / n_ouv)
+    ouv_h   = h_tete * 0.68
+    ouv_y   = y_tete + h_tete * 0.16
+    for i in range(n_ouv):
+        ox = cx - w_tete/2 + marge + pier_w + i*(ouv_w + pier_w)
+        # ouverture sombre (ciel intérieur)
+        ax.add_patch(FancyBboxPatch((ox, ouv_y), ouv_w, ouv_h,
+            boxstyle="square,pad=0.02", facecolor="#1e3a5a", edgecolor="#0f2030", lw=0.8, alpha=0.95))
+        # reflet lumineux en bas de l'ouverture
+        ax.add_patch(FancyBboxPatch((ox+0.03, ouv_y+0.05), ouv_w-0.06, ouv_h*0.18,
+            boxstyle="square,pad=0", facecolor="#3a6a9a", edgecolor="none", alpha=0.5))
 
-    ax.text(cx, head_top+0.4, type_badgir, ha="center", fontsize=9, color="#3d1e00",
-            fontweight="bold", bbox=dict(boxstyle="round,pad=0.3", facecolor="#f5deb3",
-            edgecolor="#8B4513", alpha=0.9))
-    ax.text(cx, head_top+1.0, f"↑ {orientation}", ha="center", fontsize=8, color="#555")
+    # créneaux / couronnement
+    y_couronne = y_tete + h_tete
+    cap_h = 0.18
+    ax.add_patch(FancyBboxPatch((cx-w_tete/2-0.06, y_couronne), w_tete+0.12, cap_h,
+        boxstyle="square,pad=0", facecolor="#7a4e28", edgecolor="#3d2010", lw=1.2, alpha=0.97))
+    if type_badgir == "4-conduits":
+        m_w, m_h, m_gap = 0.22, 0.20, 0.12
+        x0 = cx - w_tete/2 - 0.06 + m_gap
+        for _ in range(4):
+            ax.add_patch(FancyBboxPatch((x0, y_couronne+cap_h), m_w, m_h,
+                boxstyle="square,pad=0", facecolor="#7a4e28", edgecolor="#3d2010", lw=0.8))
+            x0 += m_w + m_gap
 
-    ax.annotate("", xy=(cx+w_tour/2+0.6, head_top), xytext=(cx+w_tour/2+0.6, base_y),
-                arrowprops=dict(arrowstyle="<->", color="#999", lw=1))
-    ax.text(cx+w_tour/2+0.8, (head_top+base_y)/2, f"{hauteur}m",
-            fontsize=8, color="#777", va="center")
+    # ── Malqaf : auvent de captage asymétrique
+    if type_badgir == "Malqaf":
+        xs = [cx-w_tete/2-0.05, cx-w_tete/2-0.8, cx-w_tete/2-0.8, cx-w_tete/2-0.05]
+        ys = [y_tete+h_tete*0.1, y_tete+h_tete*0.55, y_tete+h_tete*0.85, y_tete+h_tete*0.85]
+        ax.fill(xs, ys, color="#a07040", edgecolor="#5a3010", lw=1, alpha=0.9)
 
-    ax.add_patch(FancyBboxPatch((0.2, 9.2), 3.9, 4.5, boxstyle="round,pad=0.2",
-        facecolor="white", edgecolor="#e07840", lw=1.5, alpha=0.95))
-    ax.text(0.5, 13.4, "Performance (GP surrogate)", fontsize=8, color="#e07840", fontweight="bold")
-    ax.text(0.5, 12.9, f"Q = {q_predit} ± {sigma_q} m³/h", fontsize=10, color="#1a1a2e", fontweight="bold")
-    ax.text(0.5, 12.4, f"H = {hauteur} m  |  conduit = {largeur_conduit:.1f} m", fontsize=9, color="#555")
-    ax.text(0.5, 11.9, f"R² GP = 0.998  (CFD Fluent k-ε)", fontsize=8, color="#888")
-    ax.text(0.5, 11.4, f"Type : {type_badgir}", fontsize=9, color="#555")
+    # ── flèches de vent (entrée)
+    y_arr = y_tete + h_tete * 0.5
+    for i, (dy, alph, lw) in enumerate([(0, 1.0, 2.2), (-0.38, 0.55, 1.5)]):
+        ax.annotate("", xy=(cx-w_tete/2-0.08, y_arr+dy),
+                    xytext=(cx-w_tete/2-2.3, y_arr+dy),
+                    arrowprops=dict(arrowstyle="-|>", color="#2a7acc", lw=lw, alpha=alph))
+    ax.text(cx-w_tete/2-2.5, y_arr+0.28, f"V = {v_vent} m/s",
+            fontsize=9, color="#1250a0", fontweight="bold")
+
+    # ── sortie d'air frais (base)
+    ax.annotate("", xy=(cx+w_fus/2+1.6, base_y+0.45),
+                xytext=(cx+w_fus/2+0.1, base_y+0.45),
+                arrowprops=dict(arrowstyle="-|>", color="#2e7d32", lw=2.2))
+    ax.text(cx+w_fus/2+0.18, base_y+0.85, "Air frais", fontsize=8.5, color="#1b5e20", fontweight="bold")
+
+    # ── cote hauteur
+    y_top = y_couronne + cap_h + (0.22 if type_badgir=="4-conduits" else 0.02)
+    ax.annotate("", xy=(cx+w_fus/2+0.55, y_top), xytext=(cx+w_fus/2+0.55, base_y),
+                arrowprops=dict(arrowstyle="<->", color="#888", lw=1.1))
+    ax.text(cx+w_fus/2+0.72, (y_top+base_y)/2, f"{hauteur} m",
+            fontsize=8.5, color="#555", va="center")
+
+    # ── étiquettes
+    y_label = y_top + 0.12
+    ax.text(cx, y_label, type_badgir, ha="center", fontsize=9.5, color="#3d1e00", fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.3", facecolor="#f5deb3", edgecolor="#8B4513", alpha=0.92))
+    ax.text(cx, y_label+0.62, f"↑ {orientation}", ha="center", fontsize=8.5, color="#444")
+
+    # ── boîte de performance (fond blanc, coin en bas à gauche)
+    ax.add_patch(FancyBboxPatch((0.1, 8.8), 4.2, 4.9, boxstyle="round,pad=0.22",
+        facecolor="white", edgecolor="#e07840", lw=1.6, alpha=0.97))
+    ax.text(0.42, 13.4, "Performance (GP surrogate)", fontsize=8, color="#e07840", fontweight="bold")
+    ax.text(0.42, 12.82, f"Q = {q_predit} ± {sigma_q} m³/h", fontsize=10.5, color="#1a1a2e", fontweight="bold")
+    ax.text(0.42, 12.25, f"H = {hauteur} m  ·  conduit = {largeur_conduit:.1f} m", fontsize=8.8, color="#555")
+    ax.text(0.42, 11.72, f"R² GP = 0.998  (CFD Fluent k-ε)", fontsize=8.2, color="#888")
+    ax.text(0.42, 11.22, f"Type : {type_badgir}  ·  n conduits = {n_cond}", fontsize=8.2, color="#555")
+    ax.text(0.42, 10.68, f"V_ext = {v_vent} m/s  ·  α = 0°", fontsize=8, color="#888")
 
 # ── Visualisation PINN 2D conduit ─────────────────────────────────────────────
 def draw_pinn_2d(ax, H_conduit=12.0, w_conduit=0.8, v_vent=5.0):
